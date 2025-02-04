@@ -1,0 +1,49 @@
+Agenda:
+
+-Catch alex up to speed
+-Define what project expectations are
+    -User inputting relevant news articles about a crisis event like a natural disaster and our app generating a template
+    -Python script that scrapes content from the news articles
+    -Natural disasters, shootings, etc will all have there own template that the LLM will populate with info
+    -We will then display the template to the user and keep past templates.
+
+Gibbs: Focus on LLM logic after getting frontend up
+
+Frontend is using Next.js will use APIs in backend, MongoDB (locally), Gooogle OAuth
+Setting up backend architecture with Flask
+
+LLM is not decided yet. 
+
+Deployment is client's linux server, question for him is will LLMs fit on the server
+"Prompt engineering will be very important"
+
+We started design during class, a proof of concept would help
+
+Nick presented the Figma wireframe that was started in class.
+
+    -Search bar instead of dropdown menu for categories
+
+    -Design LLM a basic template, giving it breaks to fill in descriptive words and stats.
+    -Or have the LLM write the whole thing without more structured template
+        -Seperate prompts for seperate sections (prompt engineering)
+    -"Slot filling" be able to interchange LLMs
+    -Templates for similar crisis should be the same template
+
+Rough database schema in progress, can be done by classtime on Thursday.
+
+    We are storing user's previous templates and organizing by time so created time will be needed
+    
+LLM output will go to command line, do we redirect into JSON or txt file?
+JSON would probably be easiest
+
+Do we prompt AI to pick the best 3 attempts to ensure quality responces?
+
+Can we use DeepSeek? If not, llama or another model will work
+
+The team joined a Trello workspace to organize our tasks.
+
+Backend tasks: Setting up Flask API, look into MongoDB. Once we find our LLM we can go into testing
+Initialize a next.js project in repo
+
+Project Requirements ahead of meeting
+
