@@ -46,4 +46,3 @@ Backend tasks: Setting up Flask API, look into MongoDB. Once we find our LLM we 
 Initialize a next.js project in repo
 
 Project Requirements ahead of meeting
-

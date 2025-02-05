@@ -1,0 +1,34 @@
+Crisis Event typesL mass shootings, hurricanes, floods, earthquakes
+
+(news articles)
+Collection -> Event
+
+Main goal is to generate template or a summary
+
+Tamplate (summary) generation (5W1H - what, where, when, who, why, and how)
+These are the three steps that he would like us to take in prototyping
+    Manual - offline <- reccomends starting here as a prototype
+    Manual - user fills in form that can create a template or a summary that can turn into a summary with place holders ex. <shooter-name> <place> <time>
+    automated (using LLM) *****
+
+All event types will have the different templates so hurricanes will have the same template, but it will be different from shootings.
+
+Slot filling
+
+First webpage seen, is login. User logs in, chooses event type that he is interested in
+chooses hurricane for example
+
+Nick: How do we add extra information about the crisis that will improve output quality?
+Provide a good template that will allow the LLM to fill in those spots. Note, templates shouldn't be very long
+
+Answer: Extra prompt engineering to produce template. Starting point is giving examples
+ (prompt: These 3 events, within this category, here are the sample web pages. here is the template, and here is the placeholder)
+ IF there is a new event type, user can create template
+
+Use smaller LLM so it can perform, but if there is space we can use the larger one on his server.
+Only restriction on LLM is that it needs to perform locally
+
+Slot filling: be able to do it.
+
+Nick showed the Figma wireframe design:
+Will need to change the template design to be different than the wireframe
