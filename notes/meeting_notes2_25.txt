@@ -1,0 +1,18 @@
+The meeting started around 4 with Nick and Jackson talking about the new Claude 3.7 release
+
+Then conversation started with the use of Google Auth and how we will assign roles when signing up.
+
+-Admin (us developers) can assign roles
+-Higher user that can manipulate templates and then base user than can simply generate them
+-Hardcode a whitelist, refferal program???
+-Key value for users that contains their role and render pages accordingly
+(later note secure API endpoints for roles)
+
+Alex and Gibbs assigned working on backend for auth so frontend can get a simple login page working.
+Gibbs is going to be away this weekend incl. Friday
+
+Client meeting is next wednesday and he would like to see what we have working with authentication. 
+Just some functionality of a webapp and a good prompt for generating templates for a couple event types.
+Client specifically asked for a prompt
+
+Our second presentation is on 3/25 and we need to have something to present if we have the above done, that will help
