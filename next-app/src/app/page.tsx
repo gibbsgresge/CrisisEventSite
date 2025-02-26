@@ -1,9 +1,6 @@
-import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Home() {
-  return (
-    <div className="flex flex-1 items-center justify-center min-h-screen bg-background">
-      <h1>CrisisBrief</h1>
-    </div>
-  );
+  return <div className="min-h-screen bg-background"></div>;
 }
