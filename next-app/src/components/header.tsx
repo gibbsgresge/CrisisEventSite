@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { ThemeSwitcher } from "./theme-switcher";
 
 export default function Header() {
   return (
@@ -12,6 +13,7 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-6">
+          <ThemeSwitcher />
           <Link href={"/login"}>
             <Button>Login</Button>
           </Link>
