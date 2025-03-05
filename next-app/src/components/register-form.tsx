@@ -12,6 +12,7 @@ import { Input } from "./ui/input";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
   const [email, setEmail] = useState("");
@@ -19,6 +20,7 @@ export default function RegisterForm() {
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const router = useRouter();
 
   return (
     <div className="flex flex-col gap-6">
@@ -45,7 +47,7 @@ export default function RegisterForm() {
                 <Label htmlFor="first-name">First Name</Label>
                 <Input
                   id="first-name"
-                  type="first-name"
+                  type="text"
                   placeholder="John"
                   required
                   value={firstName}
@@ -56,7 +58,7 @@ export default function RegisterForm() {
                 <Label htmlFor="last-name">Last Name</Label>
                 <Input
                   id="last-name"
-                  type="last-name"
+                  type="text"
                   placeholder="Doe"
                   required
                   value={lastName}
@@ -88,14 +90,24 @@ export default function RegisterForm() {
             <Button
               type="submit"
               className="w-full"
-              onClick={() => {
-                console.log(
-                  firstName,
-                  lastName,
-                  email,
-                  password,
-                  confirmPassword
-                );
+              onClick={async () => {
+                const res = await fetch("/api/register", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    firstName,
+                    lastName,
+                    email,
+                    password,
+                    confirmPassword,
+                  }),
+                });
+                const data = await res.json();
+                if (res.ok) {
+                  router.push("/login");
+                } else {
+                  console.error(data.error);
+                }
               }}
             >
               Register
