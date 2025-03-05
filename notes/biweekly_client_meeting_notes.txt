@@ -1,0 +1,30 @@
+3/5 Client Meeting Notes
+
+Last time asked for a demo and prompt that will generate templates.
+
+Started with showing the client our prompt that is based on o1's optimal prompting.
+Returns a json with the summary, we also used the same prompt on Claude and Meta's AI.
+
+Meta did not appear as reliable, and would create tags or not fill them in.
+
+Gemini did not appear to have any issues, these are just visual tests and we don't have a human template to compare and create a grade for.
+
+Asked if we are going to manually change scripts or write a code that will do it for us.
+
+Backend and front end has authentication using Next.js and MongoDB is running using Docker locally.
+Nextauth.js uses jwt.
+
+Nick presented Aneesh's webscraping. 
+
+Client said we have made good progress.
+
+Reccommended taking notes in report style of what has been done, or what progress has been made.
+For example, Specifically each step of how the prompt was developed over time and improved.
+
+Using docker will be easier to format the db. It will be persistant
+
+Look into langchang, because current webscraping takes way too long.
+
+
+He requests something that he can actually use and work with next meeting. Preliminary demo that utilizes web scraping
+Next meeting March 19th
