@@ -16,9 +16,26 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
   const router = useRouter();
+
+  const handleSubmit = async () => {
+    console.log("handle submit entered");
+    const res = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+
+    if (res && res.error) {
+      setError(res.error);
+    } else {
+      // Handle successful login (e.g., redirect to a dashboard)
+      console.log("Logged in successfully");
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -63,21 +80,11 @@ export default function LoginForm() {
             <Button
               type="submit"
               className="w-full"
-              onClick={async () => {
-                const res = await signIn("credentials", {
-                  redirect: false,
-                  email,
-                  password,
-                });
-                if (!res || res.error) {
-                  console.error("Login error:", res?.error);
-                } else {
-                  router.push("/dashboard"); // Change to your desired route
-                }
-              }}
+              onClick={() => handleSubmit()}
             >
               Login
             </Button>
+            {error && <span>{error}</span>}
             {/* <Button variant="outline" className="w-full">
               Login with Google
             </Button> */}
