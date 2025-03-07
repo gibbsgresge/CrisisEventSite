@@ -20,7 +20,40 @@ export default function RegisterForm() {
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const handleRegister = async () => {
+    setError(null);
+    setSuccess(null);
+    setLoading(true);
+
+    const res = await fetch("/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        firstName,
+        lastName,
+        email,
+        password,
+        confirmPassword,
+      }),
+    });
+
+    const data = await res.json();
+    setLoading(false);
+
+    if (res.ok) {
+      setSuccess("Account created successfully! Redirecting...");
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000); // Redirect after 2 seconds
+    } else {
+      setError(data.error || "An unexpected error occurred.");
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -87,30 +120,16 @@ export default function RegisterForm() {
               />
             </div>
 
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {success && <p className="text-green-500 text-sm">{success}</p>}
+
             <Button
               type="submit"
               className="w-full"
-              onClick={async () => {
-                const res = await fetch("/api/register", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    firstName,
-                    lastName,
-                    email,
-                    password,
-                    confirmPassword,
-                  }),
-                });
-                const data = await res.json();
-                if (res.ok) {
-                  router.push("/login");
-                } else {
-                  console.error(data.error);
-                }
-              }}
+              onClick={handleRegister}
+              disabled={loading}
             >
-              Register
+              {loading ? "Registering..." : "Register"}
             </Button>
           </div>
           <div className="mt-4 text-center text-sm">

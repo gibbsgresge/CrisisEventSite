@@ -34,6 +34,7 @@ export default function LoginForm() {
     } else {
       // Handle successful login (e.g., redirect to a dashboard)
       console.log("Logged in successfully");
+      router.push("/dashboard");
     }
   };
 
