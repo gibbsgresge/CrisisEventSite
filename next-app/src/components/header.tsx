@@ -3,15 +3,25 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ThemeSwitcher } from "./theme-switcher";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import AccountInfo from "@/components/ui/account-info";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function Header() {
+  const { data: session } = useSession();
+
   return (
-    <header className="border-b bg-background flex flex-1 justify-center px-6">
+    <header className="border-b bg-background flex flex-1 justify-center px-4">
+      {session && (
+        <div className="flex items-center pr-6">
+          <SidebarTrigger />
+        </div>
+      )}
+
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-6">
           <Link href={"/"}>
-            <h1>CrisisBrief</h1>
+            <h1 className="text-lg">{session ? "" : "CrisisBrief"}</h1>
           </Link>
         </div>
 
@@ -30,15 +40,14 @@ function AuthButton() {
   if (session) {
     return (
       <>
-        {session?.user?.name}
-        <Button onClick={() => signOut({ callbackUrl: "/" })}>Sign Out</Button>
+        <AccountInfo />
       </>
     );
   }
 
   return (
     <>
-      <Button onClick={() => signIn("github", { callbackUrl: "/dashboard" })}>
+      <Button onClick={() => signIn("github", { callbackUrl: "/new-summary" })}>
         Sign in
       </Button>
     </>
