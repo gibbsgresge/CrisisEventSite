@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ThemeSwitcher } from "./theme-switcher";
 import { signIn, signOut, useSession } from "next-auth/react";
+import AccountInfo from "./ui/account-info";
 
 export default function Header() {
   return (
@@ -30,8 +31,7 @@ function AuthButton() {
   if (session) {
     return (
       <>
-        {session?.user?.name}
-        <Button onClick={() => signOut({ callbackUrl: "/" })}>Sign Out</Button>
+        <AccountInfo />
       </>
     );
   }
