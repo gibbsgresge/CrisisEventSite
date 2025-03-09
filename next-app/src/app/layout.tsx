@@ -5,6 +5,8 @@ import "./globals.css";
 import Header from "@/components/header";
 import { getServerSession } from "next-auth";
 import SessionProvider from "@/components/session-provider";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,10 +42,15 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <SessionProvider session={session}>
-            <Header />
-            <main className="flex flex-1 min-h-screen bg-background justify-center">
-              {children}
-            </main>
+            <SidebarProvider>
+              {session && <AppSidebar />}
+              <div className="flex flex-col w-full">
+                <Header />
+                <main className="flex flex-1 min-h-screen bg-background justify-center">
+                  {children}
+                </main>
+              </div>
+            </SidebarProvider>
           </SessionProvider>
         </ThemeProvider>
       </body>
