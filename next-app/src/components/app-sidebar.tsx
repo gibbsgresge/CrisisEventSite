@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/sidebar";
 import { PenBox } from "lucide-react";
 import Link from "next/link";
+import { Button } from "./ui/button";
 
 // This is sample data.
 const data = {
@@ -61,15 +62,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link href={"/new-summary"} title="New Summary">
-                <PenBox size={16} />
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <div className="flex flex-1 items-center justify-between px-2">
+          <h1 className="text-xl font-bold">CrisisBrief</h1>
+          <Link href={"/new-summary"} title="New Summary">
+            <Button variant={"ghost"} size={"icon"}>
+              <PenBox size={16} />
+            </Button>
+          </Link>
+        </div>
       </SidebarHeader>
       <SidebarContent>
         {/* We create a SidebarGroup for each parent. */}

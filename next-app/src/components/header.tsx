@@ -21,7 +21,7 @@ export default function Header() {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-6">
           <Link href={"/"}>
-            <h1 className="text-lg">CrisisBrief</h1>
+            <h1 className="text-lg">{session ? "" : "CrisisBrief"}</h1>
           </Link>
         </div>
 
