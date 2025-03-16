@@ -27,8 +27,8 @@ const data = {
       url: "#",
       items: [
         {
-          title: "Generate Template",
-          url: "#",
+          title: "New Template",
+          url: "/new-template",
         },
         {
           title: "Test Template Accuracy",
