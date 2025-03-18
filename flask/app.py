@@ -31,69 +31,46 @@ def scrape_body_text(url):
     body_text = "\n".join([p.get_text() for p in paragraphs])
     return body_text
 
-def generate_summary(content, categories):
+
+def generate_template(disaster_type: str, disaster_context: str) -> str:
+
+    prompt = f"""
+    You are a professional news reporter whose job is to create a summary template for {disaster_type}. You should pick up on key attributes found across all the given paragraphs.
+
+    Each context paragraph is a separate instance of a {disaster_type} event that has happened. 
+    Your goal is to return ONE 5 sentence summary template that has key attributes left as tags in this format <example-attribute>. 
+    The template should end with a tag specifically for unique/extra info about a specific {disaster_type}.
+
+    Only use the provided summaries of crisis events
+
+    For example, the template for a hurricane would look like this:
+
+    <hurricane-name> made landfall as a <category> hurricane, impacting <primary-location> with <primary-impact>. 
+    The storm caused <death-toll> deaths and resulted in <damage-cost> in damages. 
+    <secondary-impact> displaced thousands and left widespread destruction. 
+    The response and recovery efforts were <response-evaluation>. 
+    <unique-extra-info>.
+
+    RETURN ONLY THE TEMPLATE IN THE DESCRIBED FORMAT, NO OTHER TEXT.
+    ONLY RETURN ONE TEMPLATE THAT COULD BE USED FOR THE DISASTER TYPE 
+    MAKE SURE THE ATTRIBUTES/TEMPLATE ARE SPECIFIC TO THAT DISASTER TYPE AND ARE SURROUNDED BY THE <>.
     """
-    Using a text generation pipeline to produce a summary based on `content` and `categories`.
-    """
-    # Create a categories template
-    categories_text = "\n".join([f"{category}: []" for category in categories])
-    
-    # Create a system prompt that instructs how to summarize
-    system_prompt = f"""
-    You are an expert at parsing news articles about disaster events.
-    Summarize the information about the given article and return it in the following format:
-    
-    {categories_text}
 
-    Return only the above information.
-    Disregard any miscellaneous or extra information in the article.
-    REMOVE THE BRACKETS AND RETURN THE TEXT SEPARATED BY A COLON
-    DO NOT RETURN ANY EXTRA TEXT.
-    """
+    messages = [
+        {"role": "system", "content": prompt},
+        {"role": "user", "content": disaster_context},
+    ]
 
-    # The pipeline expects a prompt string. 
-    # If your pipeline is specialized to a Chat-like model, you might have to adapt for "system"/"user" roles differently.
-    # Below is an example if the pipeline was purely text-generation based:
-    prompt = system_prompt + "\n\n" + content
+    response = text_generation_pipeline(messages, max_length=2048)
 
-    # Increase max_length if you expect a long summary, but watch out for memory usage.
-    # Temperature or other hyperparameters can be tuned.
-    # Example: text_generation_pipeline(prompt, max_length=1000, temperature=0.7)
-    # For a chat-based model that expects messages, you’d pass them in a slightly different structure.
-    result = text_generation_pipeline(prompt, max_length=2000, do_sample=False)
-    
-    # result is typically a list of dicts with a "generated_text" key
-    if not result or "generated_text" not in result[0]:
-        return "ERROR: No output from model."
+    template = response[-1]["generated_text"][-1][ "content"]
 
-    summary_text = result[0]["generated_text"]
-    return summary_text
+    return template
 
-def parse_summary_to_dict(summary_text, categories):
-    """
-    Parse the generated summary text, extracting the text after each 'Category:'.
-    Return a dictionary {category -> text}.
-    """
-    summary_dict = {}
-    for category in categories:
-        # e.g., if category is "Title", we look for "Title: something"
-        # we search with re.IGNORECASE in case the model changes capitalization
-        # handle missing or partial matches
-        pattern = rf"{category}:\s*(.*)"
-        match = re.search(pattern, summary_text, re.IGNORECASE)
-        if match:
-            # We take everything after 'Category:' up until the next newline
-            # or if your model prints them line-by-line, you might want to refine how you parse
-            # For now, we just take the entire match to the end of the line.
-            captured_text = match.group(1).strip()
-            # If the model lumps them together, you could also parse up to the next category
-            # but let's keep it simple for now
-        else:
-            captured_text = "N/A"
+def parse_attributes(template: str) -> list[str]:
+    attributes = re.findall(r"<(.*?)>", template)
 
-        summary_dict[category] = captured_text
-
-    return summary_dict
+    return attributes
 
 # --- 3) FLASK ENDPOINTS ---
 
@@ -104,8 +81,8 @@ def index():
     """
     return jsonify({"message": "Server is up and running"}), 200
 
-@app.route('/summarize', methods=['POST'])
-def summarize():
+@app.route('/generate_from_url', methods=['POST'])
+def generate_from_url():
     """
     Endpoint that accepts JSON with 'url' and 'categories'.
     1) Scrape the text from the URL.
@@ -115,21 +92,20 @@ def summarize():
     Example JSON body:
     {
         "url": "https://some-news-article",
-        "categories": ["Title","Short Description","How Many People Involved","Article Summary","Disaster Type","Location"]
+        "category": "hurricane"
     }
     """
     data = request.get_json()
     
     # Validate the incoming request JSON
-    if not data or 'url' not in data or 'categories' not in data:
-        return jsonify({"error": "Request JSON must contain 'url' and 'categories'."}), 400
+    if not data or 'url' not in data or 'category' not in data:
+        return jsonify({"error": "Request JSON must contain 'url' and 'category'."}), 400
 
     url = data['url']
-    categories = data['categories']
+    category = data['category']
 
-    # Optional: limit the length of categories or do additional validations
-    if not isinstance(categories, list) or not all(isinstance(cat, str) for cat in categories):
-        return jsonify({"error": "'categories' must be a list of strings."}), 400
+    if not isinstance(category, str):
+        return jsonify({"error": "'category' must be strings."}), 400
 
     if text_generation_pipeline is None:
         return jsonify({"error": "Text generation pipeline is not loaded on the server."}), 500
@@ -139,48 +115,49 @@ def summarize():
         scraped_content = scrape_body_text(url)
 
         # Step 2: Generate
-        summary_text = generate_summary(scraped_content, categories)
+        template = generate_template(category, scraped_content)
 
         # Step 3: Parse
-        summary_dict = parse_summary_to_dict(summary_text, categories)
+        attributes = parse_attributes(template)
 
         # Return JSON
         return jsonify({
-            "summary": summary_dict,
-            "raw_generation": summary_text  # in case you want to see the raw generation
+            "template": template,
+            "attributes": attributes 
         }), 200
 
     except Exception as e:
         return jsonify({"error": f"An error occurred during summarization: {e}"}), 500
 
-@app.route('/prompt', methods=['POST'])
-def prompt():
+@app.route('/generate_from_text', methods=['POST'])
+def generate_from_text():
     """
     Alternative endpoint that accepts raw text (instead of a URL) and returns the model generation
-    based on user-provided categories.
+    based on user-provided category.
     Example JSON body:
     {
         "text": "some raw text about a disaster event...",
-        "categories": ["Title", "Short Description", "Disaster Type", "Location"]
+        "category": "hurricane"
     }
     """
     data = request.get_json()
-    if not data or 'text' not in data or 'categories' not in data:
-        return jsonify({"error": "Request JSON must contain 'text' and 'categories'."}), 400
+    if not data or 'text' not in data or 'category' not in data:
+        return jsonify({"error": "Request JSON must contain 'text' and 'category'."}), 400
 
-    raw_text = data['text']
-    categories = data['categories']
+    text = data['text']
+    category = data['category']
 
     if text_generation_pipeline is None:
         return jsonify({"error": "Text generation pipeline is not loaded on the server."}), 500
 
     try:
-        summary_text = generate_summary(raw_text, categories)
-        summary_dict = parse_summary_to_dict(summary_text, categories)
+        template = generate_template(category, text)
+        attributes = parse_attributes(template)
 
+        # Return JSON
         return jsonify({
-            "summary": summary_dict,
-            "raw_generation": summary_text
+            "template": template,
+            "attributes": attributes 
         }), 200
 
     except Exception as e:
