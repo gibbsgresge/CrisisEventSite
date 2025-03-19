@@ -2,53 +2,41 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown, Delete, Plus, Sparkles, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { useState } from "react";
+import { useMutation } from "react-query";
 
-// TODO: fetch event categories from db and dynamically fill
-//       the combobox with categories
-const frameworks = [
-  {
-    value: "hurricane",
-    label: "Hurricane",
-  },
-  {
-    value: "earthquake",
-    label: "Earthquake",
-  },
-  {
-    value: "mass-shooting",
-    label: "Mass Shooting",
-  },
-];
+// API call function
+const generateTemplateAPI = async (category: string, context: string) => {
+  const response = await fetch("http://localhost:5000/generate_from_text", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      category: category,
+      text: context,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Error generating template");
+  }
+
+  return response.json();
+};
 
 // protected route
 export default function GenerateTemplate() {
-  const [urlValue, setUrlValue] = useState("");
-  const [addedUrls, setAddedUrls] = useState<string[]>([]);
-
-  const [open, setOpen] = useState(false);
   const [category, setCategory] = useState("");
+  const [context, setContext] = useState<string>("");
+
+  const [generatedTemplate, setGeneratedTemplate] = useState<string>("");
 
   const [activeButton, setActiveButton] = useState("useAI");
 
@@ -57,35 +45,21 @@ export default function GenerateTemplate() {
     redirect("/api/auth/signin");
   }
 
-  /**
-   * Add the input of url(s) to the addedUrls array without duplicates
-   *
-   * @param url the url input to be parsed for url(s) to add to addedUrls
-   */
-  const addUrl = (url: string) => {
-    // Split the input by commas, trim any extra spaces, and filter out empty strings
-    const urls = url
-      .split(",")
-      .map((u) => u.trim())
-      .filter((u) => u !== "");
+  const { mutate, isLoading, isError, isSuccess, error } = useMutation(
+    (data: { category: string; context: string }) =>
+      generateTemplateAPI(data.category, data.context),
+    {
+      onError: (error) => {
+        console.error("Error:", error);
+      },
+      onSuccess: (data) => {
+        setGeneratedTemplate(data?.template);
+      },
+    }
+  );
 
-    // Add only unique URLs to the addedUrls array
-    setAddedUrls((prevUrls) => {
-      const uniqueUrls = [...new Set([...prevUrls, ...urls])]; // Create a set to remove duplicates
-      return uniqueUrls;
-    });
-
-    setUrlValue("");
-  };
-
-  /**
-   * Remove the given url from the addedUrls array. This function is called
-   * when the "X" mark is clicked next to a given url.
-   *
-   * @param urlToRemove remove this url from addedUrls
-   */
-  const deleteUrl = (urlToRemove: string) => {
-    setAddedUrls(addedUrls.filter((url) => url !== urlToRemove));
+  const handleSubmit = () => {
+    mutate({ category, context });
   };
 
   return (
@@ -118,6 +92,8 @@ export default function GenerateTemplate() {
             <Input
               type="text"
               placeholder="e.g. Hurricane, Mass Shooting, Earthquake"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
             />
           </div>
           <p className="text-sm text-muted-foreground pt-1">
@@ -134,7 +110,11 @@ export default function GenerateTemplate() {
                 ? "Example Summaries for Similar Events"
                 : "Your Template"}
             </Label>
-            <Textarea placeholder="Lorem ipsum..." />
+            <Textarea
+              placeholder="Lorem ipsum..."
+              value={context}
+              onChange={(e) => setContext(e.target.value)}
+            />
           </div>
           <p className="text-sm text-muted-foreground pt-1">
             {activeButton === "useAI"
@@ -142,11 +122,34 @@ export default function GenerateTemplate() {
               : "Enter the template you would like to upload as plain text."}
           </p>
         </div>
-      </div>
-      <div className="flex w-full justify-end pt-6">
-        <Button disabled={!(addedUrls.length > 0 && category !== "")}>
-          Submit
-        </Button>
+
+        <div className="flex w-full justify-end pt-6">
+          <Button
+            disabled={
+              (category === "" && context === "") || isLoading || isSuccess
+            }
+            onClick={handleSubmit}
+          >
+            {isLoading ? "Submitting..." : "Submit"}
+          </Button>
+
+          {isError && <div className="text-red-500">{error}</div>}
+        </div>
+
+        {isSuccess && (
+          <div>
+            <div className="flex flex-col gap-2">
+              <Label>Generated Summary</Label>
+              <Textarea
+                value={generatedTemplate}
+                onChange={(e) => setGeneratedTemplate(e.target.value)}
+              />
+            </div>
+            <p className="text-sm text-muted-foreground pt-1">
+              {"Your generated template"}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

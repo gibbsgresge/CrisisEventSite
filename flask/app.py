@@ -2,16 +2,24 @@ from flask import Flask, request, jsonify
 import requests
 from bs4 import BeautifulSoup
 from transformers import pipeline
+from flask_cors import CORS
 import re
 
 app = Flask(__name__)
+
+# Enable CORS for all routes
+CORS(app)
 
 # --- 1) SETUP THE MODEL IN A GLOBAL SCOPE ---
 # It is generally better to load large models once on application start.
 # This can help avoid re-initializing the model on every request.
 # One issue is that your model is large (16GB). Ensure your environment can handle it.
 try:
-    text_generation_pipeline = pipeline("text-generation", model="allenai/Llama-3.1-Tulu-3-8B")
+    text_generation_pipeline = pipeline("text2text-generation", 
+        model="google/flan-t5-large",  # Use a long-context model
+        max_length=2048,  # Increase max tokens
+        truncation=True  # Ensure no overflow issues)
+    )
 except Exception as e:
     text_generation_pipeline = None
     print(f"Failed to load model pipeline. Error: {e}")
@@ -35,25 +43,28 @@ def scrape_body_text(url):
 def generate_template(disaster_type: str, disaster_context: str) -> str:
 
     prompt = f"""
-    You are a professional news reporter whose job is to create a summary template for {disaster_type}. You should pick up on key attributes found across all the given paragraphs.
+You are a professional news reporter whose job is to create a summary template for {disaster_type}. You should pick up on key attributes found across all the given paragraphs.
 
-    Each context paragraph is a separate instance of a {disaster_type} event that has happened. 
-    Your goal is to return ONE 5 sentence summary template that has key attributes left as tags in this format <example-attribute>. 
-    The template should end with a tag specifically for unique/extra info about a specific {disaster_type}.
+Each context paragraph is a separate instance of a {disaster_type} event that has happened. 
+Your goal is to return ONE 5 sentence summary template that has key attributes left as tags in this format <example-attribute>. 
+The template should end with a tag specifically for unique/extra info about a specific {disaster_type}.
 
-    Only use the provided summaries of crisis events
+Only use the provided summaries of crisis events
 
-    For example, the template for a hurricane would look like this:
+For example, the template for a hurricane would look like this:
 
-    <hurricane-name> made landfall as a <category> hurricane, impacting <primary-location> with <primary-impact>. 
-    The storm caused <death-toll> deaths and resulted in <damage-cost> in damages. 
-    <secondary-impact> displaced thousands and left widespread destruction. 
-    The response and recovery efforts were <response-evaluation>. 
-    <unique-extra-info>.
+<hurricane-name> made landfall as a <category> hurricane, impacting <primary-location> with <primary-impact>. 
+The storm caused <death-toll> deaths and resulted in <damage-cost> in damages. 
+<secondary-impact> displaced thousands and left widespread destruction. 
+The response and recovery efforts were <response-evaluation>. 
+<unique-extra-info>.
 
-    RETURN ONLY THE TEMPLATE IN THE DESCRIBED FORMAT, NO OTHER TEXT.
-    ONLY RETURN ONE TEMPLATE THAT COULD BE USED FOR THE DISASTER TYPE 
-    MAKE SURE THE ATTRIBUTES/TEMPLATE ARE SPECIFIC TO THAT DISASTER TYPE AND ARE SURROUNDED BY THE <>.
+RETURN ONLY THE TEMPLATE IN THE DESCRIBED FORMAT, NO OTHER TEXT.
+ONLY RETURN ONE TEMPLATE THAT COULD BE USED FOR THE DISASTER TYPE 
+MAKE SURE THE ATTRIBUTES/TEMPLATE ARE SPECIFIC TO THAT DISASTER TYPE AND ARE SURROUNDED BY THE <>.
+
+--
+
     """
 
     messages = [
@@ -61,10 +72,12 @@ def generate_template(disaster_type: str, disaster_context: str) -> str:
         {"role": "user", "content": disaster_context},
     ]
 
-    response = text_generation_pipeline(messages, max_length=2048)
+    response = text_generation_pipeline(prompt, max_length=2048)
 
-    template = response[-1]["generated_text"][-1][ "content"]
+    print(response)
+    template = response[0]["generated_text"]  # Directly access the generated string
 
+    print("made it here")
     return template
 
 def parse_attributes(template: str) -> list[str]:
