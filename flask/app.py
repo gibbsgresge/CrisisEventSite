@@ -1,18 +1,25 @@
 from flask import Flask, request, jsonify
 import requests
 from bs4 import BeautifulSoup
-from transformers import pipeline
+
 from flask_cors import CORS
 import re
 from email_utils import send_email
 from db_utils import save_templant
 import threading
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+
+#testing
+TEST_MODE = os.environ.get("TEST_MODE") == "1"
+
 
 app = Flask(__name__)
 
 # Enable CORS for all routes
 CORS(app)
-
 
 
 
@@ -25,11 +32,22 @@ SENDER_PASSWORD = "awhh hmvo syfp yiyn"  # Use env vars in prod!
 # while the actual tempante generation happens in this method 
 def background_generate_and_notify(recipient_email, category, source_text):
     try:
-        template = generate_template(category, source_text)
-        attributes = parse_attributes(template)
+        if TEST_MODE:
+            print("Running in TEST MODE")
+            template = f"<dummy-tag> Templant for {category} generated from test input."
+            attributes = ["dummy-tag"]
+        else:
+            template = generate_template(category, source_text)
+            attributes = parse_attributes(template)
 
-        # Save to DB
-        save_templant(recipient_email, category, template, attributes)
+        # Save to MongoDB
+        result = save_templant(recipient_email, category, template, attributes)
+
+        # Verify insert
+        if result and result.inserted_id:
+            print(f"[MongoDB] Inserted Templant for {recipient_email} with ID: {result.inserted_id}")
+        else:
+            print(f"[MongoDB] Failed to insert Templant for {recipient_email}")
 
         # Send email
         body = (
@@ -40,8 +58,11 @@ def background_generate_and_notify(recipient_email, category, source_text):
         )
         send_email(SENDER_EMAIL, SENDER_PASSWORD, recipient_email,
                    f"Your {category} Templant is Ready!", body)
+
     except Exception as e:
         print(f"Error in background processing: {e}")
+
+
 
 
 # --- 1) SETUP THE MODEL IN A GLOBAL SCOPE ---

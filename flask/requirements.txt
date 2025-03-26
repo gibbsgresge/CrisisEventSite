@@ -3,10 +3,6 @@ requests
 beautifulsoup4
 transformers
 torch
-<<<<<<< HEAD
 EmailMessage
 pymongo
 threading
-=======
-flask_cors
->>>>>>> d443ec092f636d2e6a233562141b8284ba33cb33
