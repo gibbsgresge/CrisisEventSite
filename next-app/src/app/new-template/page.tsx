@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import LoadingSpinner from "@/components/ui/loading-spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { Check, ChevronsUpDown, Delete, Plus, Sparkles, X } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -136,6 +137,7 @@ export default function GenerateTemplate() {
           {isError && <div className="text-red-500">{error}</div>}
         </div>
 
+        {isLoading && <LoadingSpinner />}
         {isSuccess && (
           <div>
             <div className="flex flex-col gap-2">
