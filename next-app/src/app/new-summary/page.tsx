@@ -114,6 +114,30 @@ export default function Dashboard() {
           </p>
         </div>
 
+        {/* Added URLs */}
+        <div>
+          <Label>Added URL(s)</Label>
+          <div className="flex flex-col w-full items-center pt-1">
+            <Separator />
+            {addedUrls.map((url, index) => (
+              <div
+                title={url}
+                className="flex w-full justify-between"
+                key={index}
+              >
+                <p className="truncate">{url}</p>
+                <Button
+                  variant={"ghost"}
+                  size={"icon"}
+                  onClick={() => deleteUrl(url)}
+                >
+                  <X />
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Event Category input */}
         <div className="flex flex-col">
           <Label>Select Crisis Event Category</Label>
@@ -169,26 +193,6 @@ export default function Dashboard() {
                 </Command>
               </PopoverContent>
             </Popover>
-          </div>
-        </div>
-
-        {/* Added URLs */}
-        <div>
-          <Label>Added URL(s)</Label>
-          <div className="flex flex-col w-full items-center pt-1">
-            <Separator />
-            {addedUrls.map((url, index) => (
-              <div className="flex w-full justify-between" key={index}>
-                <p>{url}</p>
-                <Button
-                  variant={"ghost"}
-                  size={"icon"}
-                  onClick={() => deleteUrl(url)}
-                >
-                  <X />
-                </Button>
-              </div>
-            ))}
           </div>
         </div>
       </div>
