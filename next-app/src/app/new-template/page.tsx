@@ -39,7 +39,20 @@ const generateTemplateAPI = async (
 
     return response.data;
   } catch (error) {
-    console.error("Error generating template:", error);
+    console.error("Axios error:", error);
+
+    if (axios.isAxiosError(error)) {
+      if (!error.response) {
+        // Handle network errors separately
+        throw new Error("Failed to connect to the server. Please try again.");
+      }
+
+      throw new Error(
+        error.response.data?.message || "An unknown error occurred"
+      );
+    }
+
+    throw new Error("An unexpected error occurred");
   }
 };
 
@@ -77,35 +90,46 @@ export default function GenerateTemplate() {
     fetchUser();
   }, [session]);
 
-  const { mutate, isLoading, isError, isSuccess, error } = useMutation(
-    (data: { category: string; context: string }) => {
-      if (!user) {
-        throw new Error("User is not loaded yet.");
+  const { mutate, isLoading, isError, isSuccess, error } = useMutation({
+    mutationFn: async ({
+      category,
+      context,
+    }: {
+      category: string;
+      context: string;
+    }) => {
+      const response = await fetch("/api/generate-template", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ category, context }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate template");
       }
-      return generateTemplateAPI(data.category, data.context, user);
+
+      return response.json();
     },
-    {
-      onError: (error) => {
-        console.error("Error:", error);
-        toast({
-          title: "Error",
-          description: `${error}`,
-          variant: "destructive",
-        });
-      },
-      onSuccess: () => {
-        toast({
-          title: "Generating...",
-          description:
-            "You will receive an email when your template is done generating!",
-          variant: "default",
-        });
-      },
-      onSettled: () => {
-        // Resetting loading state or clearing any success/error-specific actions
-      },
-    }
-  );
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Something went wrong.",
+        variant: "destructive",
+      });
+    },
+    onSuccess: () => {
+      if (isError) return; // Skip the success toast if error occurs
+      toast({
+        title: "Generating...",
+        description:
+          "You will receive an email when your template is done generating!",
+        variant: "default",
+      });
+    },
+    onSettled: () => {
+      // Resetting loading state or clearing any success/error-specific actions
+    },
+  });
 
   const handleSubmit = () => {
     mutate({ category, context });
@@ -181,8 +205,6 @@ export default function GenerateTemplate() {
           >
             {isLoading ? "Submitting..." : "Submit"}
           </Button>
-
-          {isError && <div className="text-red-500">{error}</div>}
         </div>
 
         {isLoading && <LoadingSpinner />}
