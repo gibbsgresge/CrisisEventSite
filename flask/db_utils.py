@@ -4,10 +4,10 @@ from pymongo import MongoClient
 
 client = MongoClient("mongodb://localhost:27017")
 db = client["CrisisEventManager"]
-templants_collection = db["generated_templants"]
+templates_collection = db["generated_templates"]
 
-def save_templant(recipient, category, template, attributes):
-    result = templants_collection.insert_one({
+def save_template(recipient, category, template, attributes):
+    result = templates_collection.insert_one({
         "recipient": recipient,
         "category": category,
         "template": template,
