@@ -9,27 +9,32 @@ import { Textarea } from "@/components/ui/textarea";
 import { Check, ChevronsUpDown, Delete, Plus, Sparkles, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation } from "react-query";
+import axios from "axios";
+import { getUserByEmail } from "../server/queries";
 
 // API call function
 const generateTemplateAPI = async (category: string, context: string) => {
-  const response = await fetch("http://localhost:5000/generate_from_text", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      category: category,
-      text: context,
-    }),
-  });
+  try {
+    const response = await axios.post(
+      "http://localhost:5000/generate_from_text",
+      {
+        category: category,
+        text: context,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-  if (!response.ok) {
-    throw new Error("Error generating template");
+    return response.data;
+  } catch (error) {
+    console.error("Error generating template:", error);
+    throw error;
   }
-
-  return response.json();
 };
 
 // protected route
@@ -42,9 +47,20 @@ export default function GenerateTemplate() {
   const [activeButton, setActiveButton] = useState("useAI");
 
   const { data: session } = useSession();
-  if (!session || !session.user) {
+  if (!session || !session.user || !session.user.email) {
     redirect("/api/auth/signin");
   }
+
+  console.log("user:", session.user);
+
+  useEffect(() => {
+    if (!session || !session.user || !session.user.email) {
+      return;
+    }
+    const userResponse = getUserByEmail(session.user.email);
+
+    console.log("user response:", userResponse);
+  }, []);
 
   const { mutate, isLoading, isError, isSuccess, error } = useMutation(
     (data: { category: string; context: string }) =>
