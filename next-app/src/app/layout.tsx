@@ -8,6 +8,7 @@ import SessionProvider from "@/components/session-provider";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import QueryProvider from "@/components/query-provider";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -51,6 +52,7 @@ export default async function RootLayout({
                   <main className="flex flex-1 min-h-screen bg-background justify-center">
                     {children}
                   </main>
+                  <Toaster />
                 </div>
               </SidebarProvider>
             </SessionProvider>

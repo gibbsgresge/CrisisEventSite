@@ -14,6 +14,7 @@ import { useMutation } from "react-query";
 import axios from "axios";
 import { getUserByEmail } from "../server/queries";
 import { User } from "next-auth";
+import { useToast } from "@/hooks/use-toast";
 
 // API call function
 const generateTemplateAPI = async (
@@ -39,7 +40,6 @@ const generateTemplateAPI = async (
     return response.data;
   } catch (error) {
     console.error("Error generating template:", error);
-    throw error;
   }
 };
 
@@ -48,18 +48,16 @@ export default function GenerateTemplate() {
   const [category, setCategory] = useState("");
   const [context, setContext] = useState<string>("");
 
-  const [generatedTemplate, setGeneratedTemplate] = useState<string>("");
-
   const [activeButton, setActiveButton] = useState("useAI");
 
   const [user, setUser] = useState<User | null>(null);
+
+  const { toast } = useToast();
 
   const { data: session } = useSession();
   if (!session || !session.user || !session.user.email) {
     redirect("/api/auth/signin");
   }
-
-  // console.log("user:", session.user);
 
   // fetch user object to send to backend on POST
   useEffect(() => {
@@ -89,9 +87,22 @@ export default function GenerateTemplate() {
     {
       onError: (error) => {
         console.error("Error:", error);
+        toast({
+          title: "Error",
+          description: `${error}`,
+          variant: "destructive",
+        });
       },
-      onSuccess: (data) => {
-        setGeneratedTemplate(data?.template);
+      onSuccess: () => {
+        toast({
+          title: "Generating...",
+          description:
+            "You will receive an email when your template is done generating!",
+          variant: "default",
+        });
+      },
+      onSettled: () => {
+        // Resetting loading state or clearing any success/error-specific actions
       },
     }
   );
@@ -175,20 +186,6 @@ export default function GenerateTemplate() {
         </div>
 
         {isLoading && <LoadingSpinner />}
-        {isSuccess && (
-          <div>
-            <div className="flex flex-col gap-2">
-              <Label>Generated Summary</Label>
-              <Textarea
-                value={generatedTemplate}
-                onChange={(e) => setGeneratedTemplate(e.target.value)}
-              />
-            </div>
-            <p className="text-sm text-muted-foreground pt-1">
-              {"Your generated template"}
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
