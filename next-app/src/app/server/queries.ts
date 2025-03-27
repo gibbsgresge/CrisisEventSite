@@ -1,7 +1,7 @@
 "use server";
 
 import clientPromise from "@/lib/mongodb"; // Make sure this path is correct
-import { ObjectId } from "mongodb";
+import { User } from "next-auth";
 
 export const getUserByEmail = async (email: string) => {
   const client = await clientPromise;
@@ -14,7 +14,8 @@ export const getUserByEmail = async (email: string) => {
     throw new Error("User not found");
   }
 
-  console.log(user);
-
-  return user;
+  return {
+    ...user,
+    _id: user._id.toString(), // Convert _id to a string
+  } as unknown as User;
 };

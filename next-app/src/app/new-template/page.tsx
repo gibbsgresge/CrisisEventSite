@@ -13,13 +13,20 @@ import { useEffect, useState } from "react";
 import { useMutation } from "react-query";
 import axios from "axios";
 import { getUserByEmail } from "../server/queries";
+import { User } from "next-auth";
+import { useToast } from "@/hooks/use-toast";
 
 // API call function
-const generateTemplateAPI = async (category: string, context: string) => {
+const generateTemplateAPI = async (
+  category: string,
+  context: string,
+  user: User
+) => {
   try {
     const response = await axios.post(
       "http://localhost:5000/generate_from_text",
       {
+        user: user,
         category: category,
         text: context,
       },
@@ -32,8 +39,20 @@ const generateTemplateAPI = async (category: string, context: string) => {
 
     return response.data;
   } catch (error) {
-    console.error("Error generating template:", error);
-    throw error;
+    console.error("Axios error:", error);
+
+    if (axios.isAxiosError(error)) {
+      if (!error.response) {
+        // Handle network errors separately
+        throw new Error("Failed to connect to the server. Please try again.");
+      }
+
+      throw new Error(
+        error.response.data?.message || "An unknown error occurred"
+      );
+    }
+
+    throw new Error("An unexpected error occurred");
   }
 };
 
@@ -42,38 +61,75 @@ export default function GenerateTemplate() {
   const [category, setCategory] = useState("");
   const [context, setContext] = useState<string>("");
 
-  const [generatedTemplate, setGeneratedTemplate] = useState<string>("");
-
   const [activeButton, setActiveButton] = useState("useAI");
+
+  const [user, setUser] = useState<User | null>(null);
+
+  const { toast } = useToast();
 
   const { data: session } = useSession();
   if (!session || !session.user || !session.user.email) {
     redirect("/api/auth/signin");
   }
 
-  console.log("user:", session.user);
-
+  // fetch user object to send to backend on POST
   useEffect(() => {
-    if (!session || !session.user || !session.user.email) {
-      return;
-    }
-    const userResponse = getUserByEmail(session.user.email);
+    const fetchUser = async () => {
+      try {
+        if (!session || !session.user || !session.user.email) {
+          return;
+        }
+        const userResponse = await getUserByEmail(session.user.email);
+        setUser(userResponse);
+        console.log(userResponse);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
 
-    console.log("user response:", userResponse);
-  }, []);
+    fetchUser();
+  }, [session]);
 
-  const { mutate, isLoading, isError, isSuccess, error } = useMutation(
-    (data: { category: string; context: string }) =>
-      generateTemplateAPI(data.category, data.context),
-    {
-      onError: (error) => {
-        console.error("Error:", error);
-      },
-      onSuccess: (data) => {
-        setGeneratedTemplate(data?.template);
-      },
-    }
-  );
+  const { mutate, isLoading, isError, isSuccess, error } = useMutation({
+    mutationFn: async ({
+      category,
+      context,
+    }: {
+      category: string;
+      context: string;
+    }) => {
+      const response = await fetch("/api/generate-template", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ category, context }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate template");
+      }
+
+      return response.json();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Something went wrong.",
+        variant: "destructive",
+      });
+    },
+    onSuccess: () => {
+      if (isError) return; // Skip the success toast if error occurs
+      toast({
+        title: "Generating...",
+        description:
+          "You will receive an email when your template is done generating!",
+        variant: "default",
+      });
+    },
+    onSettled: () => {
+      // Resetting loading state or clearing any success/error-specific actions
+    },
+  });
 
   const handleSubmit = () => {
     mutate({ category, context });
@@ -149,25 +205,9 @@ export default function GenerateTemplate() {
           >
             {isLoading ? "Submitting..." : "Submit"}
           </Button>
-
-          {isError && <div className="text-red-500">{error}</div>}
         </div>
 
         {isLoading && <LoadingSpinner />}
-        {isSuccess && (
-          <div>
-            <div className="flex flex-col gap-2">
-              <Label>Generated Summary</Label>
-              <Textarea
-                value={generatedTemplate}
-                onChange={(e) => setGeneratedTemplate(e.target.value)}
-              />
-            </div>
-            <p className="text-sm text-muted-foreground pt-1">
-              {"Your generated template"}
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
