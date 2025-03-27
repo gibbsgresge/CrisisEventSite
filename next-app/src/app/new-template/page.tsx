@@ -16,11 +16,16 @@ import { getUserByEmail } from "../server/queries";
 import { User } from "next-auth";
 
 // API call function
-const generateTemplateAPI = async (category: string, context: string) => {
+const generateTemplateAPI = async (
+  category: string,
+  context: string,
+  user: User
+) => {
   try {
     const response = await axios.post(
       "http://localhost:5000/generate_from_text",
       {
+        user: user,
         category: category,
         text: context,
       },
@@ -75,8 +80,12 @@ export default function GenerateTemplate() {
   }, [session]);
 
   const { mutate, isLoading, isError, isSuccess, error } = useMutation(
-    (data: { category: string; context: string }) =>
-      generateTemplateAPI(data.category, data.context),
+    (data: { category: string; context: string }) => {
+      if (!user) {
+        throw new Error("User is not loaded yet.");
+      }
+      return generateTemplateAPI(data.category, data.context, user);
+    },
     {
       onError: (error) => {
         console.error("Error:", error);
