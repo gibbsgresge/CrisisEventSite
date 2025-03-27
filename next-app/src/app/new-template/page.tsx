@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { useMutation } from "react-query";
 import axios from "axios";
 import { getUserByEmail } from "../server/queries";
+import { User } from "next-auth";
 
 // API call function
 const generateTemplateAPI = async (category: string, context: string) => {
@@ -46,21 +47,32 @@ export default function GenerateTemplate() {
 
   const [activeButton, setActiveButton] = useState("useAI");
 
+  const [user, setUser] = useState<User | null>(null);
+
   const { data: session } = useSession();
   if (!session || !session.user || !session.user.email) {
     redirect("/api/auth/signin");
   }
 
-  console.log("user:", session.user);
+  // console.log("user:", session.user);
 
+  // fetch user object to send to backend on POST
   useEffect(() => {
-    if (!session || !session.user || !session.user.email) {
-      return;
-    }
-    const userResponse = getUserByEmail(session.user.email);
+    const fetchUser = async () => {
+      try {
+        if (!session || !session.user || !session.user.email) {
+          return;
+        }
+        const userResponse = await getUserByEmail(session.user.email);
+        setUser(userResponse);
+        console.log(userResponse);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
 
-    console.log("user response:", userResponse);
-  }, []);
+    fetchUser();
+  }, [session]);
 
   const { mutate, isLoading, isError, isSuccess, error } = useMutation(
     (data: { category: string; context: string }) =>
