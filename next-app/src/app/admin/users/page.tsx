@@ -3,13 +3,15 @@
 import { useSession } from "next-auth/react";
 import { useRouter, redirect } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getAllUsers, getUserByEmail } from "../server/queries";
+import { getAllUsers, getUserByEmail } from "@/app/server/queries";
 import { User } from "next-auth";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { useQuery } from "react-query";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { title } from "process";
 
-export default function AdminPanel() {
+export default function AdminPanelUsers() {
   const [user, setUser] = useState<User | null>(null);
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);
@@ -61,9 +63,17 @@ export default function AdminPanel() {
 
   return (
     <div>
-      <h1>Hi, {session.user.name}</h1>
-      <Button onClick={() => redirect("/admin/users")}>Users</Button>
-      <Button onClick={() => redirect("/admin/templates")}>Templates</Button>
+      <Button variant={"ghost"} onClick={() => redirect("/admin")} title="Back">
+        <ArrowLeft />
+      </Button>
+      <h2>All Users:</h2>
+      <ul>
+        {users?.map((user: User) => (
+          <li key={user.id}>
+            {user.name} ({user.email}) - {user.role}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
