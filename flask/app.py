@@ -256,7 +256,7 @@ def generate_from_text():
     category = data['category']
     user = data['user']
 
-    if not all(key in user for key in ['name', 'email', '_id', 'role']):
+    if not all(key in user for key in ['name', 'email', 'id', 'role']):
         return jsonify({"error": "User object must contain 'name', 'email', '_id', and 'role'."}), 400
 
     try:
