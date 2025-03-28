@@ -13,10 +13,21 @@ import { User } from "next-auth";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Crown, Trash, UserCheck } from "lucide-react";
+import { ArrowLeft, Crown, CrownIcon, Trash, UserCheck } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
+import { DataTable } from "./data-table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ColumnDef } from "@tanstack/react-table";
+import { MoreHorizontal } from "lucide-react";
 
 export default function AdminPanelUsers() {
   const [user, setUser] = useState<User | null>(null);
@@ -30,6 +41,19 @@ export default function AdminPanelUsers() {
   if (!session?.user) {
     redirect("/api/auth/signin");
   }
+
+  // React Query to fetch all users
+  const {
+    data: users,
+    error,
+    isLoading: queryLoading,
+  } = useQuery({
+    queryKey: ["users"],
+    queryFn: async () => {
+      const users = await getAllUsers();
+      return users;
+    },
+  });
 
   // Fetch user role
   useEffect(() => {
@@ -55,20 +79,7 @@ export default function AdminPanelUsers() {
     };
 
     fetchUser();
-  }, [session, router]);
-
-  // React Query to fetch all users
-  const {
-    data: users,
-    error,
-    isLoading: queryLoading,
-  } = useQuery({
-    queryKey: ["users"],
-    queryFn: async () => {
-      const users = await getAllUsers(); // Get all users using your existing function
-      return users; // Return the users array
-    }, // Fetch users using React Query
-  });
+  }, [session, router, users]);
 
   // Handle Role Update
   const { mutate: changeRole } = useMutation(
@@ -115,10 +126,62 @@ export default function AdminPanelUsers() {
     }
   );
 
+  const columns: ColumnDef<User>[] = [
+    {
+      accessorKey: "name",
+      header: "Name",
+    },
+    {
+      accessorKey: "email",
+      header: "Email",
+    },
+    {
+      accessorKey: "role",
+      header: "Role",
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        const user = row.original;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => changeRole({ userId: user.id, role: "admin" })}
+              >
+                <Crown />
+                Make Admin
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => changeRole({ userId: user.id, role: "user" })}
+              >
+                <UserCheck />
+                Make User
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => removeUser(user.id)}>
+                <Trash />
+                Delete User
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
+
   if (isLoading || queryLoading || !user) return <LoadingSpinner />;
 
   return (
-    <div>
+    <div className="flex flex-col px-4 w-full max-w-3xl">
       <div className="flex items-center gap-2 py-4">
         <Button
           variant={"ghost"}
@@ -129,87 +192,9 @@ export default function AdminPanelUsers() {
         </Button>
         <h1 className="text-3xl">Users</h1>
       </div>
-      {/* Table to display users */}
-      <Card>
-        <table className="min-w-full table-auto">
-          <thead>
-            <tr className="bg-background-accent">
-              <th className="px-4 py-2 text-left">Avatar</th>
-              <th className="px-4 py-2 text-left">Name</th>
-              <th className="px-4 py-2 text-left">Email</th>
-              <th className="px-4 py-2 text-left">Role</th>
-              <th className="px-4 py-2 text-left">Make Admin</th>
-              <th className="px-4 py-2 text-left">Make User</th>
-              <th className="px-4 py-2 text-left">Remove</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users?.map((user: User) => (
-              <tr key={user.id} className="border-t">
-                <td className="px-4 py-2">
-                  <Avatar>
-                    <AvatarImage
-                      src={user.image || "/default-avatar.png"}
-                      alt={user.name || "unknown"}
-                    />
-                    <AvatarFallback>?</AvatarFallback>
-                  </Avatar>
-                </td>
-                <td className="px-4 py-2">{user.name}</td>
-                <td className="px-4 py-2">{user.email}</td>
-                <td className="px-4 py-2">{user.role}</td>
-
-                {/* Make admin */}
-                <td className="px-4 py-2">
-                  <div className="flex justify-center items-center">
-                    <Button
-                      variant={"ghost"}
-                      onClick={() =>
-                        changeRole({ userId: user.id, role: "admin" })
-                      }
-                    >
-                      <Crown />
-                    </Button>
-                  </div>
-                </td>
-
-                {/* Make user */}
-                <td className="px-4 py-2">
-                  <div className="flex justify-center items-center">
-                    <Button
-                      variant={"ghost"}
-                      onClick={() =>
-                        changeRole({ userId: user.id, role: "user" })
-                      }
-                    >
-                      <UserCheck />
-                    </Button>
-                  </div>
-                </td>
-
-                {/* Delete user */}
-                <td className="px-4 py-2">
-                  <div className="flex justify-center items-center">
-                    <Button
-                      variant={"ghost"}
-                      onClick={() => {
-                        if (
-                          confirm("Are you sure you want to delete this user?")
-                        ) {
-                          console.log("user", user.id);
-                          removeUser(user.id);
-                        }
-                      }}
-                    >
-                      <Trash />
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Card>
+      <div className="container py-10 mx-auto">
+        {users && <DataTable columns={columns} data={users} />}
+      </div>
     </div>
   );
 }

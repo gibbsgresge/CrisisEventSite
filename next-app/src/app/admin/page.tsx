@@ -44,20 +44,7 @@ export default function AdminPanel() {
     fetchUser();
   }, [session, router]);
 
-  // React Query to fetch all users
-  const {
-    data: users,
-    error,
-    isLoading: queryLoading,
-  } = useQuery({
-    queryKey: ["users"],
-    queryFn: async () => {
-      const users = await getAllUsers(); // Get all users using your existing function
-      return users; // Return the users array
-    }, // Fetch users using React Query
-  });
-
-  if (isLoading || queryLoading || !user) return <LoadingSpinner />;
+  if (isLoading || !user) return <LoadingSpinner />;
 
   return (
     <div>
