@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { Check, ChevronsUpDown, Delete, Plus, Sparkles, X } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -15,46 +15,6 @@ import axios from "axios";
 import { getUserByEmail } from "../server/queries";
 import { User } from "next-auth";
 import { useToast } from "@/hooks/use-toast";
-
-// API call function
-const generateTemplateAPI = async (
-  category: string,
-  context: string,
-  user: User
-) => {
-  try {
-    const response = await axios.post(
-      "http://localhost:5000/generate_from_text",
-      {
-        user: user,
-        category: category,
-        text: context,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    return response.data;
-  } catch (error) {
-    console.error("Axios error:", error);
-
-    if (axios.isAxiosError(error)) {
-      if (!error.response) {
-        // Handle network errors separately
-        throw new Error("Failed to connect to the server. Please try again.");
-      }
-
-      throw new Error(
-        error.response.data?.message || "An unknown error occurred"
-      );
-    }
-
-    throw new Error("An unexpected error occurred");
-  }
-};
 
 // protected route
 export default function GenerateTemplate() {
@@ -67,6 +27,7 @@ export default function GenerateTemplate() {
 
   const { toast } = useToast();
 
+  // check if user is signed in
   const { data: session } = useSession();
   if (!session || !session.user || !session.user.email) {
     redirect("/api/auth/signin");
@@ -98,17 +59,25 @@ export default function GenerateTemplate() {
       category: string;
       context: string;
     }) => {
-      const response = await fetch("/api/generate-template", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ category, context }),
-      });
+      const response = await axios.post(
+        "http://localhost:5000/generate_from_text",
+        {
+          user: user,
+          category: category,
+          text: context,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      if (!response.ok) {
+      if (!response) {
         throw new Error("Failed to generate template");
       }
 
-      return response.json();
+      return response;
     },
     onError: (error) => {
       toast({
