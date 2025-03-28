@@ -31,6 +31,10 @@ const data = {
           url: "/new-template",
         },
         {
+          title: "Admin Panel",
+          url: "/admin",
+        },
+        {
           title: "Test Template Accuracy",
           url: "#",
         },
