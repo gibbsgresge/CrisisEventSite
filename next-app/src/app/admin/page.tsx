@@ -48,9 +48,22 @@ export default function AdminPanel() {
 
   return (
     <div>
-      <h1>Hi, {session.user.name}</h1>
-      <Button onClick={() => redirect("/admin/users")}>Users</Button>
-      <Button onClick={() => redirect("/admin/templates")}>Templates</Button>
+      <div className="flex flex-col px-4 w-full max-w-3xl">
+        <div className="flex items-center gap-2 py-4">
+          <h1 className="text-3xl">Hi, {session.user.name}</h1>
+        </div>
+        <div className="flex gap-4 w-full justify-between">
+          <Button className="flex-1" onClick={() => redirect("/admin/users")}>
+            Users
+          </Button>
+          <Button
+            className="flex-1"
+            onClick={() => redirect("/admin/templates")}
+          >
+            Templates
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
