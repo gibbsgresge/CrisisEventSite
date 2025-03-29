@@ -12,6 +12,10 @@ import os
 from dotenv import load_dotenv
 import torch
 import time
+import asyncio
+import aiohttp
+
+
 
 from langchain.llms import LlamaCpp
 from langchain.prompts import PromptTemplate
@@ -136,18 +140,142 @@ def background_generate_and_notify(user, category, source_text):
     except Exception as e:
         print(f"Error in background processing: {e}")
 
-def scrape_body_text(url):
-    """
-    Given a URL, scrape all text content contained in <p> tags.
-    Return the combined text as a string.
-    """
-    response = requests.get(url)
-    if response.status_code != 200:
-        raise ValueError(f"Received non-200 status code while scraping: {response.status_code}")
-    soup = BeautifulSoup(response.content, 'html.parser')
-    paragraphs = soup.find_all('p')
-    body_text = "\n".join([p.get_text() for p in paragraphs])
-    return body_text
+async def fetch_article(session, url):
+    #this is to trick the website to think we are not bot
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Connection": "keep-alive",
+    }
+    try:
+        async with session.get(url, headers=headers, timeout=10) as response:
+            html = await response.text()
+            soup = BeautifulSoup(html, "html.parser")
+            paragraphs = soup.find_all("p")
+            return "\n".join([p.get_text() for p in paragraphs])
+    except Exception as e:
+        print(f"[ERROR] Fetching {url}: {e}")
+        return ""
+
+
+async def scrape_all(urls):
+    async with aiohttp.ClientSession() as session:
+        tasks = [fetch_article(session, url) for url in urls]
+        return await asyncio.gather(*tasks)
+
+def summarize_with_llm(article_text: str, category: str) -> str:
+    prompt_template = PromptTemplate(
+        input_variables=["article_text", "category"],
+template = """
+You are an expert crisis event summarizer.
+
+Your task is to analyze the following news article about a {category} and extract **as many relevant facts and insights as possible**.
+
+Focus on:
+- Where the event occurred
+- When it happened
+- Who was affected (people, communities, organizations)
+- What exactly happened (cause, scale, damage)
+- How authorities or officials responded (evacuations, policies, statements)
+- Broader context if mentioned (patterns, comparisons, history)
+
+Avoid any personal opinions or vague statements.
+Do not add any irrelevant informations thats not related to {category} such as advertisements
+Present the summary in **7–10 detailed LINES OF PARAGRAPH**, keeping it objective and information-rich. This summary will be used in a later step to generate a high-level overview across multiple articles.
+Just give me summary test do not add any heading.
+### Article:
+{article_text}
+"""
+
+
+    )
+    chain = LLMChain(llm=llm, prompt=prompt_template)
+    try:
+        return chain.run(article_text=article_text, category=category).strip()
+    except Exception as e:
+        print(f"[ERROR] Failed to summarize article with LLM: {e}")
+        return ""
+
+def summarize_multiple_summaries(combined: str, category: str):
+    prompt_template = PromptTemplate(
+        input_variables=["category", "combined"],
+        template="""
+            You are an expert crisis analysis assistant.
+
+            Below is a list of summaries from different news articles, all related to the same type of crisis event: a {category}.
+
+            Your task is to synthesize these summaries into an overview that captures the most important patterns or common facts across all articles.
+
+            Focus on:
+            - The type of crisis
+            - Where it generally occurred
+            - Common impacts or damages reported
+            - Who was affected
+            - What actions were taken
+            - Any official response
+            - Any notable patterns in response or severity
+
+            Avoid unnecessary commentary. Be objective and clear.
+            Aim for 1–2 well-structured PARAGRAPHS.
+
+            ### Multiple Summaries:
+            {combined}
+
+        """
+    )
+
+    chain = LLMChain(llm=llm, prompt=prompt_template)
+    
+    try:
+        return chain.run(category=category, combined=combined).strip()
+    except Exception as e:
+        print(f"[ERROR] Failed to summarize combined summaries: {e}")
+        return ""
+
+def background_generate_from_urls_and_notify(user, category, urls):
+    try:
+        print(f"[INFO] Starting scrape for {len(urls)} URLs")
+        start_time = time.time()
+        all_texts = asyncio.run(scrape_all(urls))
+
+        summaries = []
+        for idx, text in enumerate(all_texts):
+            if not text or len(text.strip()) < 100:
+                continue
+            print(f"[INFO] Summarizing article {idx+1}/{len(all_texts)}")
+            summary = summarize_with_llm(text, category)
+            if summary:
+                summaries.append(summary)
+
+        combined_summary = "\n".join(summaries)
+
+        final_summary = summarize_multiple_summaries(combined_summary, category)
+        print("title: ", generate_title(category, final_summary))
+        #we are not generating template here
+        #template = generate_template(category, combined_summary)
+        end_time = time.time()
+
+        result = save_template(user['email'], category, final_summary, [])
+
+        if result and result.inserted_id:
+            print(f"[MongoDB] Inserted Summary for {user['email']} with ID: {result.inserted_id}")
+        else:
+            print(f"[MongoDB] Failed to insert Summary for {user['email']}")
+
+        body = (
+            f"Hi {user['name']},\n\n"
+            f"Your summary for '{category}' has been generated from {len(summaries)} articles.\n\n"
+            f"Summary:\n{final_summary}\n\n"
+            f"Summary generation took {end_time - start_time:.2f} seconds\n\n"
+            "You can now return to the site to view the summary."
+        )
+        send_email(SENDER_EMAIL, SENDER_PASSWORD, user['email'],
+                   f"Your {category} Summary is Ready!", body)
+
+    except Exception as e:
+        print(f"[ERROR] Background processing failed: {e}")
+
 
 
 def generate_template(disaster_type: str, disaster_context: str) -> str:
@@ -184,6 +312,31 @@ def parse_attributes(template: str) -> list[str]:
 
     return attributes
 
+
+def generate_title(category: str, summary_or_template_text: str) -> str:
+    prompt_template = PromptTemplate(
+        input_variables=["category", "summary_text"],
+        template="""
+        You are an expert news aggregator. Generate a short, catchy, and informative title for a text about a {category}. 
+        Below is the text that needs a title. 
+        - Keep it less than 5 words. 
+        - Avoid extra details or filler.
+
+        ### Text:
+        {summary_text}
+
+        Give me a title only
+        """
+    )
+
+    chain = LLMChain(llm=llm, prompt=prompt_template)
+    
+    try:
+        return chain.run(category=category, summary_text=summary_or_template_text).strip()
+    except Exception as e:
+        print(f"[ERROR] Failed to generate title: {e}")
+        return "Untitled"
+
 # --- 3) FLASK ENDPOINTS ---
 
 @app.route('/', methods=['GET'])
@@ -194,45 +347,33 @@ def index():
     return jsonify({"message": "Server is up and running"}), 200
 
 @app.route('/generate_from_url', methods=['POST'])
-def generate_from_url():
-    """
-    This endpoint accepts a URL, disaster category, and email.
-    It:
-    1. Scrapes the text from the URL.
-    2. Immediately returns a response to the user saying the Template is being generated.
-    3. In the background:
-        - Generates the Template using the model
-        - Extracts attributes
-        - Saves it to MongoDB
-        - Emails the user
-    """
+def generate_from_urls():
     data = request.get_json()
 
-    if not data or 'url' not in data or 'category' not in data or 'email' not in data:
-        return jsonify({"error": "Request JSON must contain 'url', 'category', and 'email'."}), 400
+    if not data or 'urls' not in data or 'category' not in data or 'user' not in data:
+        return jsonify({"error": "Request JSON must contain 'urls', 'category', and 'user' object."}), 400
 
-    url = data['url']
+    urls = data['urls']
     category = data['category']
-    recipient_email = data['email']
+    user = data['user']
+
+    if not isinstance(urls, list):
+        return jsonify({"error": "'urls' must be a list."}), 400
 
     try:
-        # Scrape the article content
-        scraped_content = scrape_body_text(url)
-
-        # Launch generation and email in background
         thread = threading.Thread(
-            target=background_generate_and_notify,
-            args=(recipient_email, category, scraped_content)
+            target=background_generate_from_urls_and_notify,
+            args=(user, category, urls)
         )
         thread.start()
 
-        # Immediate response to user
         return jsonify({
-            "message": "Your Template is being generated. You will receive an email when it's ready."
+            "message": "Your Summary is being generated. You will receive an email when it's ready."
         }), 202
 
     except Exception as e:
         return jsonify({"error": f"Failed to process request: {e}"}), 500
+
 
 
 @app.route('/generate_from_text', methods=['POST'])
