@@ -18,10 +18,18 @@ import {
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { Check, ChevronsUpDown, Delete, Plus, X } from "lucide-react";
+import {
+  Check,
+  ChevronsUpDown,
+  Delete,
+  Plus,
+  UploadCloud,
+  X,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { useDropzone } from "react-dropzone";
 
 // TODO: fetch event categories from db and dynamically fill
 //       the combobox with categories
@@ -84,40 +92,63 @@ export default function Dashboard() {
     setAddedUrls(addedUrls.filter((url) => url !== urlToRemove));
   };
 
+  /**
+   * Reads a text file and extracts URLs from it.
+   * @param file The uploaded text file.
+   */
+  const handleFileUpload = useCallback((acceptedFiles: File[]) => {
+    acceptedFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const text = reader.result as string;
+        const urls = text
+          .split("\n")
+          .map((url) => url.trim())
+          .filter((url) => url.length > 0);
+        setAddedUrls((prev) => [...new Set([...prev, ...urls])]);
+      };
+      reader.readAsText(file);
+    });
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: handleFileUpload,
+    accept: { "text/plain": [".txt"] },
+    multiple: true, // Enable multiple file uploads
+    onDragEnter: (e: { preventDefault: () => any }) => e.preventDefault(),
+    onDragOver: (e: { preventDefault: () => any }) => e.preventDefault(),
+    onDragLeave: (e: { preventDefault: () => any }) => e.preventDefault(),
+  });
+
   return (
-    <div className="flex flex-col items-center pt-20 w-full max-w-lg p-4">
+    <div className="flex flex-col items-center pt-20 w-full max-w-3xl p-4">
       <div>
         <h1 className="text-3xl font-bold">New Summary</h1>
       </div>
 
       <div className="flex flex-col w-full gap-6 pt-6">
-        {/* URLS input */}
-        <div>
-          <Label>Enter URL(s)</Label>
-          <div className="flex w-full items-center space-x-2 pt-1">
-            <Input
-              type="url"
-              placeholder="https://vt.edu"
-              value={urlValue}
-              onChange={(e) => {
-                setUrlValue(e.target.value);
-              }}
-            />
-            <Button type="submit" onClick={() => addUrl(urlValue)}>
-              <Plus />
-            </Button>
+        {/* File Upload Box */}
+        <div className="flex flex-col gap-2">
+          <Label>Upload URL File</Label>
+          <div
+            {...getRootProps()}
+            className={cn(
+              "flex flex-col items-center justify-center w-full border-2 border-dashed rounded-lg p-6 cursor-pointer",
+              isDragActive ? "border-primary" : "border-muted"
+            )}
+          >
+            <input {...getInputProps()} />
+            <UploadCloud className="w-10 h-10 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground mt-2">
+              Drag & drop a .txt file here, or click to upload
+            </p>
           </div>
-          <p className="text-sm text-muted-foreground pt-1">
-            {
-              " You can add multiple URLs at once by entering them in a comma separated list. (e.g. https://vt.edu, https://crisisbrief.com)"
-            }
-          </p>
         </div>
 
         {/* Added URLs */}
-        <div>
+        <div className="flex flex-col gap-2">
           <Label>Added URL(s)</Label>
-          <div className="flex flex-col w-full items-center pt-1">
+          <div className="flex flex-col w-full items-center gap-1">
             <Separator />
             {addedUrls.map((url, index) => (
               <div
@@ -139,9 +170,9 @@ export default function Dashboard() {
         </div>
 
         {/* Event Category input */}
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-2">
           <Label>Select Crisis Event Category</Label>
-          <div className="pt-2">
+          <div>
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
                 <Button
