@@ -167,7 +167,10 @@ export default function AdminPanelUsers() {
                 Make User
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => removeUser(user.id)}>
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={() => removeUser(user.id)}
+              >
                 <Trash />
                 Delete User
               </DropdownMenuItem>
@@ -187,8 +190,9 @@ export default function AdminPanelUsers() {
           variant={"ghost"}
           onClick={() => redirect("/admin")}
           title="Back"
+          size={"icon"}
         >
-          <ArrowLeft />
+          <ArrowLeft className="w-24 h-24" />
         </Button>
         <h1 className="text-3xl">Users</h1>
       </div>
