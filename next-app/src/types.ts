@@ -22,3 +22,13 @@ declare module "next-auth/jwt" {
     role?: string;
   }
 }
+
+
+export interface Templant {
+  id?: string; // string version of MongoDB ObjectId
+  recipient: string;
+  category: string;
+  template: string;
+  attributes: any[]; // You can make this more specific if you know the shape
+  createdAt?: Date;
+}
