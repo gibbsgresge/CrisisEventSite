@@ -3,7 +3,7 @@
 import clientPromise from "@/lib/mongodb"; // Make sure this path is correct
 import { ObjectId } from "mongodb";
 import { User } from "next-auth";
-import { Templant } from "@/types"; // or wherever your types.ts is
+import { template } from "@/types"; // or wherever your types.ts is
 
 
 
@@ -95,14 +95,14 @@ export const deleteUser = async (userId: string) => {
 
 
 // CREATE
-export const createTemplant = async (
-  data: Omit<Templant, "id" | "createdAt">
+export const createtemplate = async (
+  data: Omit<template, "id" | "createdAt">
 ) => {
   const client = await clientPromise;
   const db = client.db();
-  const templantsCollection = db.collection("generated_templants");
+  const templatesCollection = db.collection("generated_templates");
 
-  const result = await templantsCollection.insertOne({
+  const result = await templatesCollection.insertOne({
     ...data,
     createdAt: new Date(),
   });
@@ -111,72 +111,72 @@ export const createTemplant = async (
 };
 
 // READ (one by ID)
-export const getTemplantById = async (id: string) => {
+export const gettemplateById = async (id: string) => {
   const client = await clientPromise;
   const db = client.db();
-  const templantsCollection = db.collection("generated_templants");
+  const templatesCollection = db.collection("generated_templates");
 
-  const templant = await templantsCollection.findOne({ _id: new ObjectId(id) });
+  const template = await templatesCollection.findOne({ _id: new ObjectId(id) });
 
-  if (!templant) throw new Error("Templant not found");
+  if (!template) throw new Error("template not found");
 
   return {
-    id: templant._id.toString(),
-    recipient: templant.recipient,
-    category: templant.category,
-    template: templant.template,
-    attributes: templant.attributes || [],
-    createdAt: templant.createdAt || null,
-  } as Templant;
+    id: template._id.toString(),
+    recipient: template.recipient,
+    category: template.category,
+    template: template.template,
+    attributes: template.attributes || [],
+    createdAt: template.createdAt || null,
+  } as template;
 };
 
 // READ (all by recipient email)
-export const getTemplantsByRecipient = async (email: string) => {
+export const gettemplatesByRecipient = async (email: string) => {
   const client = await clientPromise;
   const db = client.db();
-  const templantsCollection = db.collection("generated_templants");
+  const templatesCollection = db.collection("generated_templates");
 
-  const templants = await templantsCollection.find({ recipient: email }).toArray();
+  const templates = await templatesCollection.find({ recipient: email }).toArray();
 
-  return templants.map((templ) => ({
+  return templates.map((templ) => ({
     id: templ._id.toString(),
     recipient: templ.recipient,
     category: templ.category,
     template: templ.template,
     attributes: templ.attributes || [],
     createdAt: templ.createdAt || null,
-  })) as Templant[];
+  })) as template[];
 };
 
 // UPDATE
-export const updateTemplant = async (
+export const updatetemplate = async (
   id: string,
-  updates: Partial<Omit<Templant, "id" | "createdAt">>
+  updates: Partial<Omit<template, "id" | "createdAt">>
 ) => {
   const client = await clientPromise;
   const db = client.db();
-  const templantsCollection = db.collection("generated_templants");
+  const templatesCollection = db.collection("generated_templates");
 
-  const result = await templantsCollection.updateOne(
+  const result = await templatesCollection.updateOne(
     { _id: new ObjectId(id) },
     { $set: updates }
   );
 
-  if (result.matchedCount === 0) throw new Error("Templant not found");
+  if (result.matchedCount === 0) throw new Error("template not found");
   if (result.modifiedCount === 0) throw new Error("Update failed");
 
   return { success: true };
 };
 
 // DELETE
-export const deleteTemplant = async (id: string) => {
+export const deletetemplate = async (id: string) => {
   const client = await clientPromise;
   const db = client.db();
-  const templantsCollection = db.collection("generated_templants");
+  const templatesCollection = db.collection("generated_templates");
 
-  const result = await templantsCollection.deleteOne({ _id: new ObjectId(id) });
+  const result = await templatesCollection.deleteOne({ _id: new ObjectId(id) });
 
-  if (!result.deletedCount) throw new Error("Failed to delete templant");
+  if (!result.deletedCount) throw new Error("Failed to delete template");
 
   return { success: true };
 };
