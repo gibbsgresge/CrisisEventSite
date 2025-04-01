@@ -79,10 +79,10 @@ export default function GenerateTemplate() {
 
       return response;
     },
-    onError: (error) => {
+    onError: (error: string) => {
       toast({
         title: "Error",
-        description: error.message || "Something went wrong.",
+        description: error || "Something went wrong.",
         variant: "destructive",
       });
     },

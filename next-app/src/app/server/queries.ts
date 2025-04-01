@@ -3,7 +3,7 @@
 import clientPromise from "@/lib/mongodb"; // Make sure this path is correct
 import { ObjectId } from "mongodb";
 import { User } from "next-auth";
-import { template, summary } from "@/types"; // or wherever your types.ts is
+import { Template, Summary } from "@/types"; // or wherever your types.ts is
 
 
 
@@ -96,7 +96,7 @@ export const deleteUser = async (userId: string) => {
 
 // CREATE
 export const createtemplate = async (
-  data: Omit<template, "id" | "createdAt">
+  data: Omit<Template, "id" | "createdAt">
 ) => {
   const client = await clientPromise;
   const db = client.db();
@@ -127,7 +127,7 @@ export const gettemplateById = async (id: string) => {
     template: template.template,
     attributes: template.attributes || [],
     createdAt: template.createdAt || null,
-  } as template;
+  } as Template;
 };
 
 // READ (all by recipient email)
@@ -145,8 +145,9 @@ export const gettemplatesByRecipient = async (email: string) => {
     template: templ.template,
     attributes: templ.attributes || [],
     createdAt: templ.createdAt || null,
-  })) as template[];
+  })) as Template[];
 };
+
 //  Get all templates 
 export const getAllTemplates = async () => {
   const client = await clientPromise;
@@ -163,7 +164,7 @@ export const getAllTemplates = async () => {
     template: templ.template,
     attributes: templ.attributes || [],
     createdAt: templ.createdAt || null,
-  })) as template[];
+  })) as Template[];
 };
 
 
@@ -172,7 +173,7 @@ export const getAllTemplates = async () => {
 // UPDATE
 export const updatetemplate = async (
   id: string,
-  updates: Partial<Omit<template, "id" | "createdAt">>
+  updates: Partial<Omit<Template, "id" | "createdAt">>
 ) => {
   const client = await clientPromise;
   const db = client.db();
@@ -206,7 +207,7 @@ export const deletetemplate = async (id: string) => {
 
 // CREATE SUMMARY 
 export const createSummary = async (
-  data: Omit<summary, "id" | "created_at">
+  data: Omit<Summary, "id" | "created_at">
 ) => {
   const client = await clientPromise;
   const db = client.db();
@@ -221,7 +222,7 @@ export const createSummary = async (
 };
 
 // GET ALL SUMMARIES
-export const getAllSummarys = async (): Promise<summary[]> => {
+export const getAllSummarys = async (): Promise<Summary[]> => {
   const client = await clientPromise;
   const db = client.db();
   const summarysCollection = db.collection("generated_summarys");
@@ -239,7 +240,7 @@ export const getAllSummarys = async (): Promise<summary[]> => {
 };
 
 // GET SUMMARY BY ID
-export const getSummaryById = async (id: string): Promise<summary | null> => {
+export const getSummaryById = async (id: string): Promise<Summary | null> => {
   const client = await clientPromise;
   const db = client.db();
   const summarysCollection = db.collection("generated_summarys");
@@ -261,7 +262,7 @@ export const getSummaryById = async (id: string): Promise<summary | null> => {
 // UPDATE SUMMARY BY ID
 export const updateSummaryById = async (
   id: string,
-  updatedData: Partial<Omit<summary, "id" | "created_at">>
+  updatedData: Partial<Omit<Summary, "id" | "created_at">>
 ): Promise<boolean> => {
   const client = await clientPromise;
   const db = client.db();

@@ -24,7 +24,7 @@ declare module "next-auth/jwt" {
 }
 
 
-export interface template {
+export interface Template {
   id?: string; // string version of MongoDB ObjectId
   recipient: string;
   category: string;
@@ -33,8 +33,8 @@ export interface template {
   createdAt?: Date;
 }
 
-export interface summary {
-  
+export interface Summary {
+    id: string,
     recipient: string,
     category: string,
     summary: string,
