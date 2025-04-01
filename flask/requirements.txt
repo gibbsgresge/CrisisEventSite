@@ -2,9 +2,9 @@ Flask
 flask-cors
 beautifulsoup4
 python-dotenv
-torch
-torchvision
-torchaudio
+torch --extra-index-url https://download.pytorch.org/whl/cu121
+torchvision --extra-index-url https://download.pytorch.org/whl/cu121
+torchaudio --extra-index-url https://download.pytorch.org/whl/cu121
 transformers
 huggingface-hub
 langchain

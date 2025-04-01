@@ -6,7 +6,7 @@ from flask_cors import CORS
 from transformers import pipeline, TextStreamer
 import re
 from email_utils import send_email
-from db_utils import save_template
+from db_utils import save_template, save_summary, get_template_by_id
 import threading
 import os
 from dotenv import load_dotenv
@@ -24,16 +24,15 @@ from huggingface_hub import hf_hub_download
 
 load_dotenv()
 
-
 # Check if CUDA is available
+print("torch version", torch.__version__)  # Check PyTorch version
+print("cuda version", torch.version.cuda)  # Check the CUDA version PyTorch is built with. if none, only cpu version of torch is installed
 USE_CUDA = torch.cuda.is_available()
 device = "cuda" if USE_CUDA else "cpu"
 print(f"CUDA Available: {USE_CUDA}, Using Device: {device}")
 
-
 #testing
 TEST_MODE = os.environ.get("TEST_MODE") == "1"
-
 
 app = Flask(__name__)
 
@@ -95,7 +94,6 @@ llm = LlamaCpp(
       f16_kv=True,  # MUST set to True, otherwise you will run into problem after a couple of calls if Metal.
     #   callbacks=callback_manager,
       n_ctx=n_ctx,
-      verbose=False,
       max_tokens=max_tokens,
       temperature=temperature, # Critical for good results
       top_p=top_p,
@@ -197,43 +195,37 @@ Just give me summary test do not add any heading.
         print(f"[ERROR] Failed to summarize article with LLM: {e}")
         return ""
 
-def summarize_multiple_summaries(combined: str, category: str):
+def summarize_multiple_summaries(combined: str, category: str, template, attributes):
     prompt_template = PromptTemplate(
-        input_variables=["category", "combined"],
-        template="""
-            You are an expert crisis analysis assistant.
+    input_variables=["category", "combined", "template"],
+    template="""
+        You are an expert crisis analysis assistant.
 
-            Below is a list of summaries from different news articles, all related to the same type of crisis event: a {category}.
+        Below is a list of summaries from different news articles, all related to the same type of crisis event: a {category}.
 
-            Your task is to synthesize these summaries into an overview that captures the most important patterns or common facts across all articles.
+        Your task is to analyze these summaries and extract the necessary details to fill in the placeholders within the provided template.
 
-            Focus on:
-            - The type of crisis
-            - Where it generally occurred
-            - Common impacts or damages reported
-            - Who was affected
-            - What actions were taken
-            - Any official response
-            - Any notable patterns in response or severity
+        The placeholders are enclosed in angle brackets (e.g., <magnitude>, <primary-affected-location>). Each placeholder should be replaced with the most relevant information from the summaries.
 
-            Avoid unnecessary commentary. Be objective and clear.
-            Aim for 1–2 well-structured PARAGRAPHS.
+        ### Multiple Summaries:
+        {combined}
 
-            ### Multiple Summaries:
-            {combined}
+        ### Template:
+        {template}
 
-        """
-    )
+        Carefully extract the information and replace each placeholder with the most appropriate details found in the summaries. Ensure accuracy, clarity, and objectivity in the final filled-out template.
+    """
+)
 
     chain = LLMChain(llm=llm, prompt=prompt_template)
     
     try:
-        return chain.run(category=category, combined=combined).strip()
+        return chain.run(category=category, combined=combined, template=template).strip()
     except Exception as e:
         print(f"[ERROR] Failed to summarize combined summaries: {e}")
         return ""
 
-def background_generate_from_urls_and_notify(user, category, urls):
+def background_generate_from_urls_and_notify(user, category, template_id, urls):
     try:
         print(f"[INFO] Starting scrape for {len(urls)} URLs")
         start_time = time.time()
@@ -250,13 +242,16 @@ def background_generate_from_urls_and_notify(user, category, urls):
 
         combined_summary = "\n".join(summaries)
 
-        final_summary = summarize_multiple_summaries(combined_summary, category)
-        print("title: ", generate_title(category, final_summary))
-        #we are not generating template here
-        #template = generate_template(category, combined_summary)
+        # get template
+        template = get_template_by_id(template_id)
+
+        print(f"[INFO] Starting final summary generation")
+        final_summary = summarize_multiple_summaries(combined_summary, category, template['template'], template['attributes'])
+        print(f"[INFO] Starting title generation")
+        title = generate_title(category, final_summary)
         end_time = time.time()
 
-        result = save_template(user['email'], category, final_summary, [])
+        result = save_summary(user, category, final_summary, title)
 
         if result and result.inserted_id:
             print(f"[MongoDB] Inserted Summary for {user['email']} with ID: {result.inserted_id}")
@@ -325,7 +320,7 @@ def generate_title(category: str, summary_or_template_text: str) -> str:
         ### Text:
         {summary_text}
 
-        Give me a title only
+        Give me a title only.
         """
     )
 
@@ -346,15 +341,16 @@ def index():
     """
     return jsonify({"message": "Server is up and running"}), 200
 
-@app.route('/generate_from_url', methods=['POST'])
+@app.route('/generate-summary', methods=['POST'])
 def generate_from_urls():
     data = request.get_json()
 
-    if not data or 'urls' not in data or 'category' not in data or 'user' not in data:
-        return jsonify({"error": "Request JSON must contain 'urls', 'category', and 'user' object."}), 400
+    if not data or 'urls' not in data or 'category' not in data or 'template_id' not in data or 'user' not in data:
+        return jsonify({"error": "Request JSON must contain 'urls', 'template_id', and 'user' object."}), 400
 
     urls = data['urls']
     category = data['category']
+    template_id = data['template_id']
     user = data['user']
 
     if not isinstance(urls, list):
@@ -363,7 +359,7 @@ def generate_from_urls():
     try:
         thread = threading.Thread(
             target=background_generate_from_urls_and_notify,
-            args=(user, category, urls)
+            args=(user, category, template_id, urls)
         )
         thread.start()
 
@@ -376,7 +372,7 @@ def generate_from_urls():
 
 
 
-@app.route('/generate_from_text', methods=['POST'])
+@app.route('/generate-template', methods=['POST'])
 def generate_from_text():
     """
     This endpoint accepts raw disaster text, disaster category, and user object.
