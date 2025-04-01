@@ -147,6 +147,27 @@ export const gettemplatesByRecipient = async (email: string) => {
     createdAt: templ.createdAt || null,
   })) as template[];
 };
+//  Get all templates 
+export const getAllTemplates = async () => {
+  const client = await clientPromise;
+  const db = client.db();
+  const templatesCollection = db.collection("generated_templates");
+
+  const templates = await templatesCollection.find({}).toArray();
+
+
+  return templates.map((templ) => ({
+    id: templ._id.toString(),
+    recipient: templ.recipient,
+    category: templ.category,
+    template: templ.template,
+    attributes: templ.attributes || [],
+    createdAt: templ.createdAt || null,
+  })) as template[];
+};
+
+
+
 
 // UPDATE
 export const updatetemplate = async (
