@@ -24,7 +24,7 @@ declare module "next-auth/jwt" {
 }
 
 
-export interface Templant {
+export interface template {
   id?: string; // string version of MongoDB ObjectId
   recipient: string;
   category: string;
