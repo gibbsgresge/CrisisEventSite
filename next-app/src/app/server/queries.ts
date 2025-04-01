@@ -5,9 +5,6 @@ import { ObjectId } from "mongodb";
 import { User } from "next-auth";
 import { template, summary } from "@/types"; // or wherever your types.ts is
 
-
-
-
 export const getUserByEmail = async (email: string) => {
   const client = await clientPromise;
   const db = client.db();
@@ -92,8 +89,6 @@ export const deleteUser = async (userId: string) => {
   return { success: true };
 };
 
-
-
 // CREATE
 export const createtemplate = async (
   data: Omit<template, "id" | "createdAt">
@@ -104,7 +99,7 @@ export const createtemplate = async (
 
   const result = await templatesCollection.insertOne({
     ...data,
-    createdAt: new Date(),
+    created_at: new Date(),
   });
 
   return { id: result.insertedId.toString() };
@@ -126,7 +121,7 @@ export const gettemplateById = async (id: string) => {
     category: template.category,
     template: template.template,
     attributes: template.attributes || [],
-    createdAt: template.createdAt || null,
+    createdAt: template.created_at || null,
   } as template;
 };
 
@@ -136,7 +131,9 @@ export const gettemplatesByRecipient = async (email: string) => {
   const db = client.db();
   const templatesCollection = db.collection("generated_templates");
 
-  const templates = await templatesCollection.find({ recipient: email }).toArray();
+  const templates = await templatesCollection
+    .find({ recipient: email })
+    .toArray();
 
   return templates.map((templ) => ({
     id: templ._id.toString(),
@@ -144,10 +141,10 @@ export const gettemplatesByRecipient = async (email: string) => {
     category: templ.category,
     template: templ.template,
     attributes: templ.attributes || [],
-    createdAt: templ.createdAt || null,
+    createdAt: templ.created_at || null,
   })) as template[];
 };
-//  Get all templates 
+//  Get all templates
 export const getAllTemplates = async () => {
   const client = await clientPromise;
   const db = client.db();
@@ -155,22 +152,18 @@ export const getAllTemplates = async () => {
 
   const templates = await templatesCollection.find({}).toArray();
 
-
   return templates.map((templ) => ({
     id: templ._id.toString(),
     recipient: templ.recipient,
     category: templ.category,
     template: templ.template,
     attributes: templ.attributes || [],
-    createdAt: templ.createdAt || null,
+    createdAt: templ.created_at || null,
   })) as template[];
 };
 
-
-
-
 // UPDATE
-export const updatetemplate = async (
+export const updateTemplate = async (
   id: string,
   updates: Partial<Omit<template, "id" | "createdAt">>
 ) => {
@@ -190,7 +183,7 @@ export const updatetemplate = async (
 };
 
 // DELETE
-export const deletetemplate = async (id: string) => {
+export const deleteTemplate = async (id: string) => {
   const client = await clientPromise;
   const db = client.db();
   const templatesCollection = db.collection("generated_templates");
@@ -202,9 +195,7 @@ export const deletetemplate = async (id: string) => {
   return { success: true };
 };
 
-
-
-// CREATE SUMMARY 
+// CREATE SUMMARY
 export const createSummary = async (
   data: Omit<summary, "id" | "created_at">
 ) => {
@@ -244,7 +235,9 @@ export const getSummaryById = async (id: string): Promise<summary | null> => {
   const db = client.db();
   const summarysCollection = db.collection("generated_summarys");
 
-  const summaryDoc = await summarysCollection.findOne({ _id: new ObjectId(id) });
+  const summaryDoc = await summarysCollection.findOne({
+    _id: new ObjectId(id),
+  });
 
   if (!summaryDoc) return null;
 
@@ -285,4 +278,3 @@ export const deleteSummaryById = async (id: string): Promise<boolean> => {
 
   return result.deletedCount > 0;
 };
-
