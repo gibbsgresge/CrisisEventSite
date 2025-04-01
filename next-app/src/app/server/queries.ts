@@ -3,7 +3,7 @@
 import clientPromise from "@/lib/mongodb"; // Make sure this path is correct
 import { ObjectId } from "mongodb";
 import { User } from "next-auth";
-import { template } from "@/types"; // or wherever your types.ts is
+import { template, summary } from "@/types"; // or wherever your types.ts is
 
 
 
@@ -201,3 +201,88 @@ export const deletetemplate = async (id: string) => {
 
   return { success: true };
 };
+
+
+
+// CREATE SUMMARY 
+export const createSummary = async (
+  data: Omit<summary, "id" | "created_at">
+) => {
+  const client = await clientPromise;
+  const db = client.db();
+  const summarysCollection = db.collection("generated_summarys");
+
+  const result = await summarysCollection.insertOne({
+    ...data,
+    created_at: new Date(),
+  });
+
+  return { id: result.insertedId.toString() };
+};
+
+// GET ALL SUMMARIES
+export const getAllSummarys = async (): Promise<summary[]> => {
+  const client = await clientPromise;
+  const db = client.db();
+  const summarysCollection = db.collection("generated_summarys");
+
+  const summarys = await summarysCollection.find({}).toArray();
+
+  return summarys.map((templ) => ({
+    id: templ._id.toString(),
+    recipient: templ.recipient,
+    category: templ.category,
+    title: templ.title,
+    summary: templ.summary,
+    created_at: templ.created_at || null,
+  }));
+};
+
+// GET SUMMARY BY ID
+export const getSummaryById = async (id: string): Promise<summary | null> => {
+  const client = await clientPromise;
+  const db = client.db();
+  const summarysCollection = db.collection("generated_summarys");
+
+  const summaryDoc = await summarysCollection.findOne({ _id: new ObjectId(id) });
+
+  if (!summaryDoc) return null;
+
+  return {
+    id: summaryDoc._id.toString(),
+    recipient: summaryDoc.recipient,
+    category: summaryDoc.category,
+    title: summaryDoc.title,
+    summary: summaryDoc.summary,
+    created_at: summaryDoc.created_at || null,
+  };
+};
+
+// UPDATE SUMMARY BY ID
+export const updateSummaryById = async (
+  id: string,
+  updatedData: Partial<Omit<summary, "id" | "created_at">>
+): Promise<boolean> => {
+  const client = await clientPromise;
+  const db = client.db();
+  const summarysCollection = db.collection("generated_summarys");
+
+  const result = await summarysCollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: updatedData }
+  );
+
+  return result.modifiedCount > 0;
+};
+
+// DELETE SUMMARY BY ID
+export const deleteSummaryById = async (id: string): Promise<boolean> => {
+  const client = await clientPromise;
+  const db = client.db();
+  const summarysCollection = db.collection("generated_summarys");
+
+  const result = await summarysCollection.deleteOne({ _id: new ObjectId(id) });
+
+  return result.deletedCount > 0;
+};
+
