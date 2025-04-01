@@ -3,7 +3,7 @@
 import clientPromise from "@/lib/mongodb"; // Make sure this path is correct
 import { ObjectId } from "mongodb";
 import { User } from "next-auth";
-import { template } from "@/types"; // or wherever your types.ts is
+import { Template } from "@/types"; // or wherever your types.ts is
 
 
 
