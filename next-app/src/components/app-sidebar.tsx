@@ -1,7 +1,5 @@
-import * as React from "react";
+"use client";
 
-import { SearchForm } from "@/components/search-form";
-import { VersionSwitcher } from "@/components/version-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -14,32 +12,19 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { PenBox } from "lucide-react";
+import { Crown, PenBox } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import LoadingSpinner from "./ui/loading-spinner";
+import { getUserByEmail } from "@/app/server/queries";
+import { redirect, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { User } from "next-auth";
 
 // This is sample data.
 const data = {
-  versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
   navMain: [
-    {
-      title: "Admin",
-      url: "#",
-      items: [
-        {
-          title: "New Template",
-          url: "/new-template",
-        },
-        {
-          title: "Admin Panel",
-          url: "/admin",
-        },
-        {
-          title: "Test Template Accuracy",
-          url: "#",
-        },
-      ],
-    },
     {
       title: "History",
       url: "#",
@@ -63,19 +48,63 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [user, setUser] = useState<User | null>(null);
+  const { data: session } = useSession();
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
+  // Redirect if not logged in
+  if (!session?.user) {
+    redirect("/api/auth/signin");
+  }
+
+  // Fetch user role
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        if (!session?.user?.email) return;
+
+        const userResponse = await getUserByEmail(session.user.email);
+        setUser(userResponse);
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, [session, router]);
+
+  if (isLoading || !user) return <LoadingSpinner />;
   return (
     <Sidebar {...props}>
       <SidebarHeader>
         <div className="flex flex-1 items-center justify-between px-2">
           <h1 className="text-xl font-bold">CrisisBrief</h1>
-          <Link href={"/new-summary"} title="New Summary">
-            <Button variant={"ghost"} size={"icon"}>
-              <PenBox size={16} />
-            </Button>
-          </Link>
         </div>
       </SidebarHeader>
       <SidebarContent>
+        {user.role === "admin" && (
+          <div className="px-2">
+            <SidebarMenuButton>
+              <Link href={"/admin"} className="flex items-center gap-2">
+                <Crown size={20} />
+                <span>Admin Panel</span>
+              </Link>
+            </SidebarMenuButton>
+          </div>
+        )}
+        <div className="px-2">
+          <SidebarMenuButton>
+            <Link href={"/new-summary"} className="flex items-center gap-2">
+              <PenBox size={20} />
+              <span>New Summary</span>
+            </Link>
+          </SidebarMenuButton>
+        </div>
+
         {/* We create a SidebarGroup for each parent. */}
         {data.navMain.map((item) => (
           <SidebarGroup key={item.title}>
