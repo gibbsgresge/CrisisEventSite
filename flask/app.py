@@ -342,7 +342,7 @@ def index():
     return jsonify({"message": "Server is up and running"}), 200
 
 @app.route('/generate-summary', methods=['POST'])
-def generate_from_urls():
+def generate_summary():
     data = request.get_json()
 
     if not data or 'urls' not in data or 'category' not in data or 'template_id' not in data or 'user' not in data:
@@ -373,7 +373,7 @@ def generate_from_urls():
 
 
 @app.route('/generate-template', methods=['POST'])
-def generate_from_text():
+def generate_template():
     """
     This endpoint accepts raw disaster text, disaster category, and user object.
     It:
