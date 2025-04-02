@@ -1,0 +1,30 @@
+Nick started the meeting off by demonstrating the admin side of the app and the template editing.
+As well as generating a new template in the background.
+
+We are going to have to use CPU rather than GPU.
+
+Client asked which model we are using, and we are using the one from demo in class 7bill and Quantized.
+
+The results are good, but it will give additional input and formatting.
+
+Client asked what changed compared to last meeting, and it is because we are using a different model without GPU accelleration.
+
+Client asked about evaluation, and the LLM is expanding some things, so we are going to try to tweak the prompts but it still does 
+"hallucinations" like an extra word.
+
+Instead of asking it to fill in the template, be more explicit. Ask a more specific question than to fill in the blank.
+"What was the magnitude of the earthquake." instead of filling in the template.
+We need a way of evaluation. 
+
+We are encountering a problem where the LLM will include the Hurricane template that we provide in the prompt in the new template it is generating.
+
+Next steps are to fine tuning the LLM generation, by possiblty changing the prompt to avoid giving additional information. And then coming
+up with an evaluation system. 
+
+Next steps will also include bug fixes and cleaning up code. Can be done by next client meeting. Dockerizing the project
+
+Send an email to client asking to get on TML server. 
+
+For him to tell if he needs any more features or additions we need to give him access to the app deployed on a server before next client meeting.
+
+He can give us sudo access, to get ports for both front and backend. 
