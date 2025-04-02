@@ -1,5 +1,5 @@
 // /types/next-auth.d.ts
-import { DefaultSession, DefaultUser } from "next-auth";
+import { DefaultSession, DefaultUser, User } from "next-auth";
 import { JWT } from "next-auth/jwt";
 
 declare module "next-auth" {
@@ -34,7 +34,7 @@ export interface template {
 
 export interface summary {
   id: string;
-  recipient: string;
+  recipient: User;
   category: string;
   summary: string;
   title: string;

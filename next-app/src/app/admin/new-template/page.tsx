@@ -6,13 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { Sparkles } from "lucide-react";
+import { ArrowLeft, Sparkles } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useMutation } from "react-query";
 import axios from "axios";
-import { getUserByEmail } from "../server/queries";
+import { getUserByEmail } from "../../server/queries";
 import { User } from "next-auth";
 import { useToast } from "@/hooks/use-toast";
 
@@ -23,35 +23,49 @@ export default function GenerateTemplate() {
 
   const [activeButton, setActiveButton] = useState("useAI");
 
-  const [user, setUser] = useState<User | null>(null);
-
   const { toast } = useToast();
 
-  // check if user is signed in
+  const [user, setUser] = useState<User | null>(null);
   const { data: session } = useSession();
-  if (!session || !session.user || !session.user.email) {
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
+  // Redirect if not logged in
+  if (!session?.user) {
     redirect("/api/auth/signin");
   }
 
-  // fetch user object to send to backend on POST
+  // Fetch user role
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        if (!session || !session.user || !session.user.email) {
-          return;
-        }
+        if (!session?.user?.email) return;
+
         const userResponse = await getUserByEmail(session.user.email);
         setUser(userResponse);
-        console.log(userResponse);
+
+        if (userResponse.role !== "admin") {
+          router.replace("/unauthorized");
+          return;
+        }
+
+        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching user:", error);
+        setIsLoading(false);
       }
     };
 
     fetchUser();
-  }, [session]);
+  }, [session, router]);
 
-  const { mutate, isLoading, isError, isSuccess, error } = useMutation({
+  const {
+    mutate,
+    isLoading: mutationLoading,
+    isError,
+    isSuccess,
+    error,
+  } = useMutation({
     mutationFn: async ({
       category,
       context,
@@ -60,7 +74,7 @@ export default function GenerateTemplate() {
       context: string;
     }) => {
       const response = await axios.post(
-        "http://localhost:5000/generate_from_text",
+        "http://localhost:5000/generate-template",
         {
           user: user,
           category: category,
@@ -104,9 +118,20 @@ export default function GenerateTemplate() {
     mutate({ category, context });
   };
 
+  if (isLoading || mutationLoading || !user) return <LoadingSpinner />;
+
   return (
     <div className="flex flex-col items-center pt-20 w-full max-w-lg p-4">
-      <div>
+      <div className="relative w-full flex justify-center gap-2 py-4">
+        <Button
+          variant={"ghost"}
+          onClick={() => redirect("/admin")}
+          title="Back"
+          size={"icon"}
+          className="absolute left-0"
+        >
+          <ArrowLeft className="w-24 h-24" />
+        </Button>
         <h1 className="text-3xl font-bold">New Template</h1>
       </div>
 

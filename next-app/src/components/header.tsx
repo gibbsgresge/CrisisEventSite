@@ -11,7 +11,7 @@ export default function Header() {
   const { data: session } = useSession();
 
   return (
-    <header className="border-b bg-background flex flex-1 justify-center px-4">
+    <header className="border-b bg-background flex flex-1 justify-center px-4 max-h-16">
       {session && (
         <div className="flex items-center pr-6">
           <SidebarTrigger />

@@ -60,7 +60,7 @@ export default function GeneratedTemplates() {
     fetchUser();
   }, [session, router]);
 
-  // React Query to fetch all users
+  // React Query to fetch all templates
   const {
     data: templates,
     error,
@@ -138,7 +138,7 @@ export default function GeneratedTemplates() {
   if (isLoading || queryLoading || !user) return <LoadingSpinner />;
 
   return (
-    <div className="flex flex-col px-4 w-full max-w-3xl">
+    <div className="flex flex-col px-4 mb-16 w-full max-w-3xl">
       <div className="flex items-center gap-2 py-4">
         <Button
           variant={"ghost"}
@@ -249,10 +249,23 @@ function EditableTemplateCard({
                   !editableTemplate.attributes
                 )
                   return;
+
                 const updates: UpdateTemplateData = {
                   category: editableTemplate.category,
                   attributes: editableTemplate.attributes,
                 };
+
+                // Check if any changes were actually made
+                const isUnchanged =
+                  updates.category === template.category &&
+                  JSON.stringify(updates.attributes) ===
+                    JSON.stringify(template.attributes);
+
+                if (isUnchanged) {
+                  setIsEditing(false);
+                  return;
+                }
+
                 console.log(template.id, updates);
                 onUpdate(template.id, updates);
                 setIsEditing(false);
