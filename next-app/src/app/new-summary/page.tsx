@@ -28,59 +28,65 @@ import {
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-
-// TODO: fetch event categories from db and dynamically fill
-//       the combobox with categories
-const frameworks = [
-  {
-    value: "hurricane",
-    label: "Hurricane",
-  },
-  {
-    value: "earthquake",
-    label: "Earthquake",
-  },
-  {
-    value: "mass-shooting",
-    label: "Mass Shooting",
-  },
-];
+import { useToast } from "@/hooks/use-toast";
+import { User } from "next-auth";
+import { getAllTemplates, getUserByEmail } from "@/app/server/queries";
+import { useMutation, useQuery } from "react-query";
+import axios from "axios";
+import LoadingSpinner from "@/components/ui/loading-spinner";
 
 // protected route
 export default function Dashboard() {
-  const [urlValue, setUrlValue] = useState("");
   const [addedUrls, setAddedUrls] = useState<string[]>([]);
 
   const [open, setOpen] = useState(false);
   const [category, setCategory] = useState("");
+  const [templateID, setTemplateID] = useState<string>("");
 
+  const [user, setUser] = useState<User | null>(null);
+
+  const { toast } = useToast();
+
+  // check if user is signed in
   const { data: session } = useSession();
-  if (!session || !session.user) {
+  if (!session || !session.user || !session.user.email) {
     redirect("/api/auth/signin");
   }
 
-  /**
-   * Add the input of url(s) to the addedUrls array without duplicates
-   *
-   * @param url the url input to be parsed for url(s) to add to addedUrls
-   */
-  const addUrl = (url: string) => {
-    // Split the input by commas, trim any extra spaces, and filter out empty strings
-    const urls = url
-      .split(",")
-      .map((u) => u.trim())
-      .filter((u) => u !== "");
+  // fetch user object to send to backend on POST
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        if (!session || !session.user || !session.user.email) {
+          return;
+        }
+        const userResponse = await getUserByEmail(session.user.email);
+        setUser(userResponse);
+        console.log(userResponse);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
 
-    // Add only unique URLs to the addedUrls array
-    setAddedUrls((prevUrls) => {
-      const uniqueUrls = [...new Set([...prevUrls, ...urls])]; // Create a set to remove duplicates
-      return uniqueUrls;
-    });
+    fetchUser();
+  }, [session]);
 
-    setUrlValue("");
-  };
+  // Fetch templates
+  // React Query to fetch all users
+  const {
+    data: templates,
+    error: templateError,
+    isLoading: queryLoading,
+  } = useQuery({
+    queryKey: ["generated_templates"],
+    queryFn: async () => {
+      const templates = await getAllTemplates();
+      console.log(templates);
+      return templates;
+    },
+  });
 
   /**
    * Remove the given url from the addedUrls array. This function is called
@@ -119,6 +125,73 @@ export default function Dashboard() {
     onDragOver: (e: { preventDefault: () => any }) => e.preventDefault(),
     onDragLeave: (e: { preventDefault: () => any }) => e.preventDefault(),
   });
+
+  const { mutate, isLoading, isError, isSuccess, error } = useMutation({
+    mutationFn: async ({
+      user,
+      category,
+      urls,
+      templateID,
+    }: {
+      category: string;
+      urls: string[];
+      user: User;
+      templateID: string;
+    }) => {
+      const response = await axios.post(
+        "http://localhost:5000/generate-summary",
+        {
+          user: user,
+          urls: addedUrls,
+          category: category,
+          template_id: templateID,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response) {
+        throw new Error("Failed to generate summary");
+      }
+
+      return response;
+    },
+    onError: (error: string) => {
+      toast({
+        title: "Error",
+        description: error || "Something went wrong.",
+        variant: "destructive",
+      });
+    },
+    onSuccess: () => {
+      if (isError) return; // Skip the success toast if error occurs
+      toast({
+        title: "Generating...",
+        description:
+          "You will receive an email when your summary is done generating!",
+        variant: "default",
+      });
+    },
+    onSettled: () => {
+      // Resetting loading state or clearing any success/error-specific actions
+    },
+  });
+
+  const handleSubmit = () => {
+    console.log({
+      user: user,
+      category: category,
+      urls: addedUrls,
+      template_id: templateID,
+    });
+    if (!user || !category || !addedUrls || !templateID) return;
+    mutate({ category, urls: addedUrls, user, templateID });
+  };
+
+  if (isLoading && queryLoading) return <LoadingSpinner />;
 
   return (
     <div className="flex flex-col items-center pt-20 w-full max-w-3xl p-4">
@@ -182,9 +255,10 @@ export default function Dashboard() {
                   className="w-full justify-between"
                 >
                   {category
-                    ? frameworks.find(
-                        (framework) => framework.value === category
-                      )?.label
+                    ? templates &&
+                      templates.find(
+                        (template) => template.category === category
+                      )?.category
                     : "Select Category..."}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -195,30 +269,37 @@ export default function Dashboard() {
                   <CommandList>
                     <CommandEmpty>No category found.</CommandEmpty>
                     <CommandGroup>
-                      {frameworks.map((framework) => (
-                        <CommandItem
-                          key={framework.value}
-                          value={framework.value}
-                          onSelect={(currentCategory) => {
-                            setCategory(
-                              currentCategory === category
-                                ? ""
-                                : currentCategory
-                            );
-                            setOpen(false);
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              category === framework.value
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                          {framework.label}
-                        </CommandItem>
-                      ))}
+                      {templates &&
+                        templates.map((template) => (
+                          <CommandItem
+                            key={template.id}
+                            value={template.category}
+                            onSelect={(currentCategory) => {
+                              setCategory(
+                                currentCategory === category
+                                  ? ""
+                                  : currentCategory
+                              );
+
+                              const selectedTemplate = templates.find(
+                                (t) => t.category === currentCategory
+                              );
+                              setTemplateID(selectedTemplate?.id || "");
+
+                              setOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                category === template.category
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {template.category}
+                          </CommandItem>
+                        ))}
                     </CommandGroup>
                   </CommandList>
                 </Command>
@@ -228,8 +309,13 @@ export default function Dashboard() {
         </div>
       </div>
       <div className="flex w-full justify-end pt-6">
-        <Button disabled={!(addedUrls.length > 0 && category !== "")}>
-          Submit
+        <Button
+          disabled={
+            !(addedUrls.length > 0 && category !== "") || isLoading || isSuccess
+          }
+          onClick={() => handleSubmit()}
+        >
+          {isLoading || queryLoading ? "Submitting..." : "Submit"}
         </Button>
       </div>
     </div>
