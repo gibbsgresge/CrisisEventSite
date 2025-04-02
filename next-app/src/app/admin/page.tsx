@@ -58,7 +58,7 @@ export default function AdminPanel() {
           </Button>
           <Button
             className="flex-1"
-            onClick={() => redirect("/admin/templates")}
+            onClick={() => redirect("/admin/generated-templates")}
           >
             Templates
           </Button>
