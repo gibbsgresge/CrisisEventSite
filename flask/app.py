@@ -373,7 +373,7 @@ def generate_summary():
 
 
 @app.route('/generate-template', methods=['POST'])
-def generate_template():
+def generate_template_endpoint():
     """
     This endpoint accepts raw disaster text, disaster category, and user object.
     It:
