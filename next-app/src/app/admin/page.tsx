@@ -8,6 +8,7 @@ import { User } from "next-auth";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { useQuery } from "react-query";
 import { Button } from "@/components/ui/button";
+import { Newspaper, Plus, Users } from "lucide-react";
 
 export default function AdminPanel() {
   const [user, setUser] = useState<User | null>(null);
@@ -52,16 +53,33 @@ export default function AdminPanel() {
         <div className="flex items-center gap-2 py-4">
           <h1 className="text-3xl">Hi, {session.user.name}</h1>
         </div>
-        <div className="flex gap-4 w-full justify-between">
-          <Button className="flex-1" onClick={() => redirect("/admin/users")}>
-            Users
-          </Button>
-          <Button
-            className="flex-1"
-            onClick={() => redirect("/admin/generated-templates")}
-          >
-            Templates
-          </Button>
+        <div className="flex flex-col gap-4">
+          <div className="flex gap-4 w-full justify-between">
+            <Button
+              className="flex-1"
+              onClick={() => redirect("/admin/users")}
+              variant={"outline"}
+            >
+              <Users />
+              Users
+            </Button>
+            <Button
+              className="flex-1"
+              onClick={() => redirect("/admin/generated-templates")}
+              variant={"outline"}
+            >
+              <Newspaper /> Templates
+            </Button>
+          </div>
+          <div className="flex gap-4 w-full justify-between">
+            <Button
+              className="flex-1"
+              onClick={() => redirect("/admin/new-template")}
+            >
+              <Plus />
+              Create Template
+            </Button>
+          </div>
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@
 import clientPromise from "@/lib/mongodb"; // Make sure this path is correct
 import { ObjectId } from "mongodb";
 import { User } from "next-auth";
-import { Template, Summary } from "@/types"; // or wherever your types.ts is
+import { summary, template } from "@/types"; // or wherever your types.ts is
 
 export const getUserByEmail = async (email: string) => {
   const client = await clientPromise;
@@ -91,7 +91,7 @@ export const deleteUser = async (userId: string) => {
 
 // CREATE
 export const createtemplate = async (
-  data: Omit<Template, "id" | "createdAt">
+  data: Omit<template, "id" | "createdAt">
 ) => {
   const client = await clientPromise;
   const db = client.db();
@@ -165,7 +165,7 @@ export const getAllTemplates = async () => {
 // UPDATE
 export const updateTemplate = async (
   id: string,
-  updates: Partial<Omit<Template, "id" | "createdAt">>
+  updates: Partial<Omit<template, "id" | "createdAt">>
 ) => {
   const client = await clientPromise;
   const db = client.db();
@@ -197,11 +197,11 @@ export const deleteTemplate = async (id: string) => {
 
 // CREATE SUMMARY
 export const createSummary = async (
-  data: Omit<Summary, "id" | "created_at">
+  data: Omit<summary, "id" | "created_at">
 ) => {
   const client = await clientPromise;
   const db = client.db();
-  const summarysCollection = db.collection("generated_summarys");
+  const summarysCollection = db.collection("generated_summaries");
 
   const result = await summarysCollection.insertOne({
     ...data,
@@ -212,10 +212,10 @@ export const createSummary = async (
 };
 
 // GET ALL SUMMARIES
-export const getAllSummarys = async (): Promise<Summary[]> => {
+export const getAllSummarys = async (): Promise<summary[]> => {
   const client = await clientPromise;
   const db = client.db();
-  const summarysCollection = db.collection("generated_summarys");
+  const summarysCollection = db.collection("generated_summaries");
 
   const summarys = await summarysCollection.find({}).toArray();
 
@@ -230,10 +230,10 @@ export const getAllSummarys = async (): Promise<Summary[]> => {
 };
 
 // GET SUMMARY BY ID
-export const getSummaryById = async (id: string): Promise<Summary | null> => {
+export const getSummaryById = async (id: string): Promise<summary | null> => {
   const client = await clientPromise;
   const db = client.db();
-  const summarysCollection = db.collection("generated_summarys");
+  const summarysCollection = db.collection("generated_summaries");
 
   const summaryDoc = await summarysCollection.findOne({
     _id: new ObjectId(id),
@@ -251,14 +251,37 @@ export const getSummaryById = async (id: string): Promise<Summary | null> => {
   };
 };
 
+// GET SUMMARY BY RECIPIENT EMAIL
+export const getSummaryByEmail = async (email: string): Promise<summary[]> => {
+  const client = await clientPromise;
+  const db = client.db();
+  const summarysCollection = db.collection("generated_summaries");
+
+  const summariesDocs = await summarysCollection
+    .find({
+      "recipient.email": email,
+    })
+    .sort({ created_at: -1 })
+    .toArray(); // Convert cursor to an array
+
+  return summariesDocs.map((doc) => ({
+    id: doc._id.toString(),
+    recipient: doc.recipient,
+    category: doc.category,
+    title: doc.title,
+    summary: doc.summary,
+    created_at: doc.created_at || null,
+  }));
+};
+
 // UPDATE SUMMARY BY ID
 export const updateSummaryById = async (
   id: string,
-  updatedData: Partial<Omit<Summary, "id" | "created_at">>
+  updatedData: Partial<Omit<summary, "id" | "created_at">>
 ): Promise<boolean> => {
   const client = await clientPromise;
   const db = client.db();
-  const summarysCollection = db.collection("generated_summarys");
+  const summarysCollection = db.collection("generated_summaries");
 
   const result = await summarysCollection.updateOne(
     { _id: new ObjectId(id) },
@@ -272,7 +295,7 @@ export const updateSummaryById = async (
 export const deleteSummaryById = async (id: string): Promise<boolean> => {
   const client = await clientPromise;
   const db = client.db();
-  const summarysCollection = db.collection("generated_summarys");
+  const summarysCollection = db.collection("generated_summaries");
 
   const result = await summarysCollection.deleteOne({ _id: new ObjectId(id) });
 

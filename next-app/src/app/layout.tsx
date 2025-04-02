@@ -35,7 +35,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-y-hidden`}
       >
         <ThemeProvider
           attribute="class"
@@ -47,9 +47,9 @@ export default async function RootLayout({
             <SessionProvider session={session}>
               <SidebarProvider>
                 {session && <AppSidebar />}
-                <div className="flex flex-col w-full">
+                <div className="flex flex-col w-full h-screen">
                   <Header />
-                  <main className="flex flex-1 min-h-screen bg-background justify-center">
+                  <main className="flex flex-1 min-h-screen bg-background justify-center overflow-y-auto">
                     {children}
                   </main>
                   <Toaster />
