@@ -1,0 +1,6 @@
+next-app/node_modules
+flask/__pycache__/
+*.pyc
+*.pyo
+*.log
+.git
