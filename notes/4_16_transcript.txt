@@ -1,0 +1,1056 @@
+[Alex Ryu] 10:04:10
+I'm sharing my screen. I already excited the Docker image each morning.
+
+[Alex Ryu] 10:04:17
+Through the docker desktop So… I have myself already logged in.
+
+[Alex Ryu] 10:04:27
+This is the admin pattern panel. So I can just go create templates using the AI.
+
+[Alex Ryu] 10:04:36
+I already have the text copied from the article so You can just put it here and for category, it's going to be a fire Fire.
+
+[Alex Ryu] 10:04:50
+It's currently the image is only running on cpu As you can see here.
+
+[Alex Ryu] 10:04:57
+It's using 100% on my cpu So I'll get an email notification.
+
+[Alex Ryu] 10:05:04
+You know, about like three to four minutes.
+
+[Alex Ryu] 10:05:10
+And also a niche also have image that's vulnerable Or do you have any… features you want to see.
+
+[Mohamed Farag] 10:05:24
+So that's it.
+
+[Alex Ryu] 10:05:26
+Yeah, so it's currently running on docker image. The whole website and the backend with the LLM.
+
+[Mohamed Farag] 10:05:31
+So new template this is the admin interface right And the normal user.
+
+[Alex Ryu] 10:05:34
+Yes. For normal user is going to be a summary.
+
+[Mohamed Farag] 10:05:42
+So this is from the same user account
+
+[Alex Ryu] 10:05:46
+Yes, my account is currently have the admin role.
+
+[Mohamed Farag] 10:05:50
+Okay. Yeah. Okay. So can you show me a normal user?
+
+[Alex Ryu] 10:05:57
+Normal um
+
+[Nick Hess] 10:05:58
+You can go to the admin panel and change yourself to a user from there.
+
+[Mohamed Farag] 10:06:07
+You don't have to change just to create another one
+
+[Alex Ryu] 10:06:11
+It's linked to our github. I'll have to create another GitHub account.
+
+[Mohamed Farag] 10:06:15
+Oh, so the login is… from GitHub.
+
+[Alex Ryu] 10:06:18
+Yes. Yeah.
+
+[Mohamed Farag] 10:06:21
+Interesting. So how can a normal user sign up
+
+[Nick Hess] 10:06:27
+Using GitHub.
+
+[Mohamed Farag] 10:06:29
+So who decides admin of a normal user?
+
+[Nick Hess] 10:06:34
+Whoever, we'll have to manually give users admin to begin with.
+
+[Nick Hess] 10:06:39
+Just within MongoDB. And then from there, you can see a list of all the users here and Any admin can make changes to users.
+
+[Nick Hess] 10:06:47
+Like deleting them or making admin or user
+
+[Mohamed Farag] 10:06:52
+Interesting. Okay.
+
+[Alex Ryu] 10:06:56
+I guess it looks like I can change myself to user. Do you want to see the user's page?
+
+[Mohamed Farag] 10:07:01
+Yes.
+
+[Alex Ryu] 10:07:05
+Okay, so… Yes, so this is the user space. I don't have the admin panel anymore.
+
+[Mohamed Farag] 10:07:07
+So at least when you are, okay, now, yeah. Okay, okay.
+
+[Mohamed Farag] 10:07:12
+Can you upload some of your bills and make a summary?
+
+[Alex Ryu] 10:07:18
+So it will require a text file with the links. Vortex. Okay.
+
+[Mohamed Farag] 10:07:22
+Yeah, give me eight one if you have not already, that's fine, but I need to see the whole workflow running.
+
+[Alex Ryu] 10:07:29
+Okay. What I'm…
+
+[Mohamed Farag] 10:07:30
+If you want to do that in the class, that's fine.
+
+[Nick Hess] 10:07:34
+We showed you this running last time on my machine. I think the main point of this demo was just to show it running on Docker.
+
+[Mohamed Farag] 10:07:44
+Yeah, I just want to make sure that everything is running on Doc.
+
+[Nick Hess] 10:07:48
+Okay. Yes.
+
+[Mohamed Farag] 10:07:48
+You know what I mean? It doesn't have to be now. That's fine.
+
+[Mohamed Farag] 10:07:54
+But… And this will help you in preparing for the demo next week.
+
+[Nick Hess] 10:07:57
+Even…
+
+[Alex Ryu] 10:07:59
+So it looks like the templates generated. So I received the email to say that templates ready and this is the summary
+
+[Mohamed Farag] 10:08:00
+Right? Mm-hmm.
+
+[Mohamed Farag] 10:08:06
+Okay. This is the template.
+
+[Alex Ryu] 10:08:11
+Yeah, so template and the attributes And it's a template with that is brackets with the attributes.
+
+[Mohamed Farag] 10:08:22
+So the template is the one in the middle, the big burger right
+
+[Alex Ryu] 10:08:26
+Yeah.
+
+[Mohamed Farag] 10:08:28
+So why I see South Korea's military and that's very specific
+
+[Alex Ryu] 10:08:34
+Oh wait so this is template so it says template and this is a template it's like the this is the where the AI filter in the template.
+
+[Mohamed Farag] 10:08:37
+Oh, so what's possible answer?
+
+[Mohamed Farag] 10:08:48
+For which event?
+
+[Nick Hess] 10:08:48
+Yeah, we've been having…
+
+[Alex Ryu] 10:08:50
+It's for the wildfire.
+
+[Mohamed Farag] 10:08:52
+Yeah, which wildfire? One of them or i don't understand
+
+[Alex Ryu] 10:08:58
+I gave the AI the text of the wildfire in Korea.
+
+[Mohamed Farag] 10:09:04
+But you give it for several events not just one, right?
+
+[Alex Ryu] 10:09:11
+It's giving the wildfire because I only specify that I'm giving the wildfire Text.
+
+[Nick Hess] 10:09:22
+We've been having some issues with this model like adding a lot of extra stuff.
+
+[Nick Hess] 10:09:29
+But when it does generate stuff that gives us good stuff.
+
+[Nick Hess] 10:09:34
+Results, but it usually adds extra stuff So we've been trying to I guess, get better prompts for that
+
+[Mohamed Farag] 10:09:41
+Yeah. Yeah, I was going to say that. So you are generating a template for wildfire events, right? Any wildfire event That's clicked.
+
+[Nick Hess] 10:09:52
+Yes.
+
+[Mohamed Farag] 10:09:53
+And the template here is for hurricanes.
+
+[Alex Ryu] 10:09:54
+Yes.
+
+[Nick Hess] 10:09:57
+Yeah, this was a very bad result, probably because it was using the cpu But yeah, it was not a very good… result or output from the output
+
+[Alex Ryu] 10:10:00
+Oh, I just noticed.
+
+[Mohamed Farag] 10:10:07
+That's fine. So forget about that. So what's the paragraph for possible answer?
+
+[Mohamed Farag] 10:10:12
+That's filling the template. Oh, this is another template.
+
+[Nick Hess] 10:10:19
+I have no idea. I don't know what all that is that it added.
+
+[Alex Ryu] 10:10:21
+We can actually look at we can we can actually look at the
+
+[Mohamed Farag] 10:10:22
+Okay. So that's why I see you said of testing on the docker and then is that the same output when you test it on your machine?
+
+[Mohamed Farag] 10:10:32
+Without Docker?
+
+[Nick Hess] 10:10:33
+We've had some similar instances where it'll just add a lot of extra stuff.
+
+[Mohamed Farag] 10:10:40
+But it's not extra this is wrong good stuff. So I want you to test the same example On your machine.
+
+[Nick Hess] 10:10:42
+Right. Yeah. Extra incorrect stuff.
+
+[Alex Ryu] 10:10:44
+I mean, we can't, I can… run it on the locally right now.
+
+[Alex Ryu] 10:10:50
+I can order locally. If you want to see the difference it's going to be fast because on local is going to use the GPU.
+
+[Mohamed Farag] 10:10:56
+Yeah, I just want you for the sake of testing We want it without Docker. We want it with docker with the same input.
+
+[Alex Ryu] 10:11:03
+Okay, if you want, we can do that right now. Okay.
+
+[Mohamed Farag] 10:11:06
+You don't have to do it right now i'm just for when you report that you are done I need to see how did you test your system and make sure it's already working fine.
+
+[Alex Ryu] 10:11:11
+Mm-hmm.
+
+[Mohamed Farag] 10:11:16
+It doesn't have to be correct for all the examples, but at least show me it's working 60, 90, 80, I need something quantified, right?
+
+[Nick Hess] 10:11:26
+All right.
+
+[Alex Ryu] 10:11:26
+Okay.
+
+[Mohamed Farag] 10:11:27
+So for the template generation, can you show me the prompt that you used you just use now to get that email.
+
+[Alex Ryu] 10:11:32
+Yeah, sure.
+
+[Alex Ryu] 10:11:39
+So for…
+
+[Alex Ryu] 10:11:46
+So this is the background generation.
+
+[Nick Hess] 10:11:55
+That was it.
+
+[Alex Ryu] 10:11:57
+Was this the summarize? Where was it?
+
+[Nick Hess] 10:12:01
+The summarize multiple summaries.
+
+[Alex Ryu] 10:12:02
+So much. This is for the URLs.
+
+[Nick Hess] 10:12:08
+Oh, yeah, sorry.
+
+[Mohamed Farag] 10:12:08
+I mean, for the email that you got
+
+[Mohamed Farag] 10:12:15
+I mean, the prompt that you give to the
+
+[Alex Ryu] 10:12:16
+Oh, yeah. Yeah, we use this one.
+
+[Mohamed Farag] 10:12:22
+Okay, so… when you chose wildfire.
+
+[Mohamed Farag] 10:12:26
+Where did it go in that prompt? The disaster tie.
+
+[Alex Ryu] 10:12:28
+It's going to be as given as a disaster type. Yeah.
+
+[Mohamed Farag] 10:12:32
+Okay.
+
+[Mohamed Farag] 10:12:38
+And with the example paragraphs?
+
+[Nick Hess] 10:12:43
+The disaster context.
+
+[Mohamed Farag] 10:12:45
+Okay, can you show me the template after you filled in?
+
+[Alex Ryu] 10:12:46
+So the output
+
+[Mohamed Farag] 10:12:51
+This is in the code. That's fine understand that the one that you used after filling in all this part i need to see the prompt after filling in all this part
+
+[Alex Ryu] 10:12:53
+Mm-hmm.
+
+[Alex Ryu] 10:13:00
+You mean the email that I just received?
+
+[Mohamed Farag] 10:13:02
+Not the email the prompt that you pass to the LLM after filling all these variables I just want to make sure that you fill the verbs correctly.
+
+[Mohamed Farag] 10:13:14
+Do you understand?
+
+[Alex Ryu] 10:13:18
+Also like you want to check if this disaster types
+
+[Mohamed Farag] 10:13:21
+Is wildfire yeah so can you get that? Do you lock this part
+
+[Alex Ryu] 10:13:27
+We don't log the templates. We just log that like it's cold or not.
+
+[Mohamed Farag] 10:13:29
+Hmm.
+
+[Mohamed Farag] 10:13:34
+Into, yeah.
+
+[Alex Ryu] 10:13:34
+But I guess I think I can see where it got the hurricane from because out on the outperformance says hurricane So maybe the LM messed up with this.
+
+[Mohamed Farag] 10:13:40
+Oh, so the template is not correct. Yeah, the template should be disaster type also.
+
+[Mohamed Farag] 10:13:46
+You see, Nick?
+
+[Nick Hess] 10:13:46
+Well, that was for using… I guess the mindset behind putting that there was just an example template.
+
+[Alex Ryu] 10:13:47
+Yeah. Mm-hmm.
+
+[Mohamed Farag] 10:13:55
+So you have to put in the trumpet that this is one example. Don't use that but it looks like you are instructing it to put that
+
+[Nick Hess] 10:14:05
+Right. Yeah, this is like our 10th iteration and we can we haven't seemed to find the correct prompt to get this to work.
+
+[Alex Ryu] 10:14:06
+Yeah. Yeah.
+
+[Mohamed Farag] 10:14:06
+Yeah, the pompet is not good.
+
+[Mohamed Farag] 10:14:16
+Yeah, but if you… if you want to make the template to be general and depending on so it's general So again, Nick, it looks like we are not on the same page.
+
+[Mohamed Farag] 10:14:31
+So in the output format that's the template output format, right?
+
+[Nick Hess] 10:14:36
+Yes.
+
+[Alex Ryu] 10:14:37
+Mm-hmm.
+
+[Mohamed Farag] 10:14:38
+So this should be specific to the disaster type. Not general.
+
+[Nick Hess] 10:14:43
+Yes. Right. Correct.
+
+[Mohamed Farag] 10:14:45
+So putting heavy cane, these are specific to hurricane so all disaster types will be producing hurricane Which is not correct.
+
+[Nick Hess] 10:14:55
+Well, this is the first time I've seen it not produce The only issue I've seen so far is it puts the hurricane template as along with the new template for whatever disaster type we requested.
+
+[Nick Hess] 10:15:08
+Our reasoning behind putting the output format there is just so it gets better context on what its goal is.
+
+[Nick Hess] 10:15:14
+Regarding the disaster type.
+
+[Mohamed Farag] 10:15:18
+You don't depend on the LLM understanding that that's a little bit far stretch.
+
+[Mohamed Farag] 10:15:26
+That's fine but that's fine even if why do you have two parts the template and possible answer where is that in the prompt In the email you have two parts.
+
+[Nick Hess] 10:15:36
+Yeah, it's not there. That's an example of it just generating extra nonsense that I was mentioning earlier.
+
+[Alex Ryu] 10:15:39
+Mm-hmm.
+
+[Mohamed Farag] 10:15:45
+Yeah, so don't make it that to verbalistic make the prompt very specific.
+
+[Alex Ryu] 10:15:55
+We should change that.
+
+[Nick Hess] 10:15:55
+And we have a list of instructions for it there. And it seems that no matter what instructions or what we tell it to do, it'll generate some kind of extra
+
+[Mohamed Farag] 10:16:05
+Hmm.
+
+[Nick Hess] 10:16:07
+Text.
+
+[Mohamed Farag] 10:16:11
+It's kind of confusing because if I waive the LLM, you are confusing me.
+
+[Mohamed Farag] 10:16:16
+And the instructions make it neutral and in the output format you are putting here we can So…
+
+[Mohamed Farag] 10:16:27
+Instead of the output format you can say that that's an example output for one or put it in a general so instead of hurricane it will be disaster type And then disaster name, for example, the tag will be disaster name
+
+[Mohamed Farag] 10:16:45
+But yeah, it will be a little bit difficult to make everything
+
+[Alex Ryu] 10:16:51
+So I guess for out instead of outperformer, we should do something like for example
+
+[Mohamed Farag] 10:16:56
+Oh, I remember now. Yeah, what I told you is… this is you are giving examples
+
+[Alex Ryu] 10:17:07
+So these hurricanes is just like an example
+
+[Mohamed Farag] 10:17:08
+Interesting. So remind me, what's disaster context?
+
+[Alex Ryu] 10:17:14
+Disaster context. That disaster context is the context that's given to LM to generate the template.
+
+[Mohamed Farag] 10:17:16
+Yeah.
+
+[Nick Hess] 10:17:17
+Example summaries.
+
+[Alex Ryu] 10:17:26
+And disaster type is a type of the type
+
+[Mohamed Farag] 10:17:27
+So let's take an example to understand. Disaster type is wildfire, right?
+
+[Alex Ryu] 10:17:33
+Mm-hmm.
+
+[Mohamed Farag] 10:17:33
+And disaster context is events of wildfire. How many?
+
+[Alex Ryu] 10:17:37
+Yes. How many as the user wants?
+
+[Nick Hess] 10:17:37
+Yes.
+
+[Mohamed Farag] 10:17:42
+In the example they used. For the wildfire.
+
+[Alex Ryu] 10:17:49
+It's just one article.
+
+[Mohamed Farag] 10:17:52
+One article for one event. So that's not an example, right?
+
+[Alex Ryu] 10:17:55
+Yeah, that's what I gave to him.
+
+[Mohamed Farag] 10:18:00
+Yeah.
+
+[Nick Hess] 10:18:01
+Yeah, I guess when I was doing the demo I had three paragraphs as summaries for a wildfire when I was generating the template.
+
+[Nick Hess] 10:18:13
+And it was getting better output, I guess. So maybe that is another issue.
+
+[Alex Ryu] 10:18:15
+Should we try with…
+
+[Mohamed Farag] 10:18:16
+To help the LLM. So the LLM will help you right So again, can you write that?
+
+[Alex Ryu] 10:18:21
+So should I…
+
+[Mohamed Farag] 10:18:24
+Someone is taking notes. Okay, so in the template generation, in the prompt here, what you are giving the most important part as an example is the template generated In the examples.
+
+[Nick Hess] 10:18:27
+Yes.
+
+[Mohamed Farag] 10:18:42
+Do you understand this part?
+
+[Alex Ryu] 10:18:45
+Yeah. So Vicious gives the L and the standardized like output of the event.
+
+[Mohamed Farag] 10:18:54
+When I… When we started that project, what I told you before is For example, a wildfire you will give it two summaries for two or two ceremonies for two different events so a total of four summaries.
+
+[Mohamed Farag] 10:19:09
+Do you understand this part?
+
+[Alex Ryu] 10:19:14
+Mm-hmm.
+
+[Mohamed Farag] 10:19:15
+Nick. So for example, wildfire in California, wildfire in japan And two summaries about wildfire in California and two summaries for wildfire in Japan.
+
+[Nick Hess] 10:19:16
+Yes.
+
+[Mohamed Farag] 10:19:29
+Okay so this is not the only context. You are missing something here what is it?
+
+[Nick Hess] 10:19:41
+Sorry, so we have the context for the context
+
+[Mohamed Farag] 10:19:45
+That's not only the context. You are missing one important part in the context.
+
+[Nick Hess] 10:19:50
+So we have the type and as well as examples. What else would we need?
+
+[Mohamed Farag] 10:19:54
+The template for that Type.
+
+[Nick Hess] 10:20:00
+When we're generating templates.
+
+[Mohamed Farag] 10:20:01
+Yes, because you are teaching the LLM to generate templates so how to teach it give it the summaries and their template
+
+[Nick Hess] 10:20:11
+I don't understand. If we're generating a template for a disaster type, how could we give it a template for that disaster type?
+
+[Mohamed Farag] 10:20:19
+We are teaching the llm Nick. So if the LAM understands how to generate template, okay, we'll give it the text and then it will generate the template but we are instructing daily m to do a specific task so we have to give it examples how to do that task
+
+[Nick Hess] 10:20:36
+Right. That was the thought process behind adding the output format with the hurricane example.
+
+[Mohamed Farag] 10:20:40
+Yeah, but it's very specific. That's why I that's what I told you now about the wildfire that's one example so the type is wildfire i give you two events in wildfire and here is the template for these two events
+
+[Mohamed Farag] 10:20:55
+And then Hurricane. Hurricane in Japan or hurricane in Thailand and hurricane in uh USA and the Thailand have two summaries and the usa hears are two summaries and for this type here is the template now we are giving the second example how to generate a template
+
+[Nick Hess] 10:20:57
+So…
+
+[Mohamed Farag] 10:21:14
+All of this is the context.
+
+[Nick Hess] 10:21:17
+So we need to have already hurricane with the context there and then, for example, wildfire examples with the template there to show how it converted the context into a template.
+
+[Mohamed Farag] 10:21:30
+Yes. So we're giving a couple of examples for different types.
+
+[Nick Hess] 10:21:41
+Okay.
+
+[Mohamed Farag] 10:21:50
+Do you understand this part?
+
+[Nick Hess] 10:21:53
+Yes. So we just need to show it. How it turns context into a template for that specific disaster type.
+
+[Alex Ryu] 10:21:55
+Yes.
+
+[Mohamed Farag] 10:22:02
+Yeah, and do it across different disaster types so it can generalize I understand what you try to do that by trying to give instruction and sample output format But it looks like the LLM sometimes understand that and sometimes not
+
+[Nick Hess] 10:22:21
+Right.
+
+[Mohamed Farag] 10:22:22
+So let's make it, we are instructing a baby very detailed instruction or examples
+
+[Mohamed Farag] 10:22:31
+So maybe after giving these two examples put the instructions that telling it to generalize from these two examples.
+
+[Nick Hess] 10:22:32
+Okay.
+
+[Nick Hess] 10:22:42
+Okay. And it's…
+
+[Mohamed Farag] 10:22:45
+Just before leaving that point, can you document what we discussed and put it in a word format and send it to me? What's the template generation is about, how to do it.
+
+[Mohamed Farag] 10:22:55
+What I just explained.
+
+[Nick Hess] 10:22:58
+I believe Jackson is taking notes.
+
+[Jackson Small] 10:22:59
+Yeah, I'm taking that. I'm taking that. And I have a transcript of this meeting too.
+
+[Mohamed Farag] 10:23:04
+Okay, great. Yes, Nick.
+
+[Nick Hess] 10:23:11
+Or the input on the admin side of generating templates. Should we… recommend a a certain number of templates or is that up or example summaries or is that for us to decide based on testing Like when a user is going to generate a template for wildfires, how many example summaries should they provide?
+
+[Mohamed Farag] 10:23:34
+At least two. So in order to generalize It's not one event, right?
+
+[Nick Hess] 10:23:36
+Okay.
+
+[Nick Hess] 10:23:44
+Right.
+
+[Mohamed Farag] 10:23:44
+So two different events from the same type which is why for example here wildfire give me two different events And each event two articles talking about the same event So…
+
+[Nick Hess] 10:23:53
+Okay.
+
+[Nick Hess] 10:23:58
+And they should both be using the same template. So for example, with the hurricanes, we should provide two summaries with that template in the output format and then give it the template that is provided here.
+
+[Mohamed Farag] 10:24:11
+So the template is for disaster type. Just one template per disaster type.
+
+[Nick Hess] 10:24:16
+Right.
+
+[Mohamed Farag] 10:24:17
+Independent of how many events in that disaster type so The two events in the wildfire and has the same template
+
+[Nick Hess] 10:24:27
+Yes. Okay.
+
+[Mohamed Farag] 10:24:29
+Because you are generalizing that's the template for that disaster type any event in that disaster type should follow that template. If there is extra information that's why you add in the template extra information. That's depending on each event.
+
+[Nick Hess] 10:24:36
+Okay.
+
+[Nick Hess] 10:24:44
+Right. Okay. And as far as when I use like a admin uploads their own summaries, they're not going to be following a specific template obviously that is the whole point of having the prompt give the showing the transition from context to template.
+
+[Mohamed Farag] 10:25:02
+In the admin.
+
+[Nick Hess] 10:25:04
+Yeah, when they upload the summaries, they're not going to be required to format to a specific template when they're uploading the examples.
+
+[Nick Hess] 10:25:11
+Right.
+
+[Mohamed Farag] 10:25:16
+Why do you say that, Nick? Because it's the admin interface and the admin knows that he is teaching the llm Right?
+
+[Nick Hess] 10:25:24
+So we should tell the admin that they need to have both of their summaries follow a specific template.
+
+[Mohamed Farag] 10:25:30
+Yes. So why I am providing a template And the summary doesn't follow the template.
+
+[Mohamed Farag] 10:25:36
+I'm teaching DLLM to extract this template that format from these summaries from So be careful here.
+
+[Nick Hess] 10:25:45
+Okay.
+
+[Mohamed Farag] 10:25:46
+The template information should be in the summary. But the summary doesn't have to follow the template.
+
+[Nick Hess] 10:25:57
+Could you give me an example of when it wouldn't follow the template?
+
+[Mohamed Farag] 10:26:00
+Because following the template means what should be it is the same paragraph but with values.
+
+[Nick Hess] 10:26:06
+Right.
+
+[Mohamed Farag] 10:26:07
+No, that's not what we want because you are providing two different events at least right And each event will have two different summaries.
+
+[Nick Hess] 10:26:14
+Yes, I figured that… differences would be, sorry.
+
+[Mohamed Farag] 10:26:23
+Right? So you have at least four different summaries.
+
+[Nick Hess] 10:26:24
+Yes.
+
+[Mohamed Farag] 10:26:35
+It looks like, can you unshare your screen
+
+[Alex Ryu] 10:26:40
+Yeah, sure.
+
+[Mohamed Farag] 10:26:55
+So let's take here is wildfire right
+
+[Mohamed Farag] 10:27:01
+And then you have two events. For just sake of… E1 and E2. What's E1 and E2?
+
+[Nick Hess] 10:27:11
+Two specific wildfires.
+
+[Mohamed Farag] 10:27:13
+Yeah, two events okay so that's and well if i haven't in japan wildfire happened in North Korea, for example okay and then for this specific event, you have two semis for an optical form Washington Post, let's say it article one
+
+[Mohamed Farag] 10:27:28
+Or sell everyone and article two from New York Times. Two different articles Okay. And the same here.
+
+[Mohamed Farag] 10:27:36
+Let's call this one one and this is one two And this is a article 2.1 that's talk about that different wildfire event and from different and this is article 22 Is that popped clear?
+
+[Nick Hess] 10:27:54
+Yes. So the user can upload any of the articles.
+
+[Mohamed Farag] 10:27:59
+Yes, so at least two events in order to be able to generalize and for each of these events at least two articles So the minimum is how many articles?
+
+[Nick Hess] 10:28:10
+Four. Okay.
+
+[Mohamed Farag] 10:28:11
+Four. Okay. And for all these just one template.
+
+[Mohamed Farag] 10:28:19
+Tea wildfire. And you are tasking the LLM.
+
+[Mohamed Farag] 10:28:26
+To do what to map from these articles to that template. That's the mapping that you want the LLM to do.
+
+[Mohamed Farag] 10:28:34
+How to do this mapping.
+
+[Nick Hess] 10:28:37
+So when you have these articles Oh, yeah, sorry.
+
+[Mohamed Farag] 10:28:40
+Let me finish, Nick, and then I will let you okay this is just one example.
+
+[Mohamed Farag] 10:28:46
+For the LLM. Example 1.
+
+[Mohamed Farag] 10:28:50
+The second example. Herbie Keynes.
+
+[Mohamed Farag] 10:28:54
+So that's the disaster type and then heavy chain one You see the process here we can two and then two different articles article blah blah i will not continue And then you will provide the template all these the admin will provide
+
+[Mohamed Farag] 10:29:13
+Tea hurricanes. So you're asking the LLM from this disaster type here is the articles and here's the template that you want the LLM to know how to map all these articles of different types and so of different events of the same type
+
+[Mohamed Farag] 10:29:29
+To that template. And this will be example two if this is too long context then the article should not be full articles could be the summary of the article.
+
+[Mohamed Farag] 10:29:40
+Was just the first paragraph in the article we talked about that right You remember?
+
+[Nick Hess] 10:29:45
+Yeah, we have currently… Well, we have it to where the user is supposed to do the summarization themselves currently.
+
+[Nick Hess] 10:29:54
+But for generating summaries, we have the LLM. Summarizing entire articles.
+
+[Mohamed Farag] 10:29:58
+So if the admin is going to admin is going to to avoid that then the admin will tell the admin that if this is full article or at least exceed maximum size you have. Do you check that or just take it as is?
+
+[Nick Hess] 10:30:15
+We plan to add like a character limit on the input on the user and on the front end.
+
+[Mohamed Farag] 10:30:20
+Okay, just make a note on the admin interface that the provided articles should be just at least one or at most one paragraph.
+
+[Mohamed Farag] 10:30:29
+For example, or the maximum number of characters whatever you want So this is two examples. You can provide three, four, five examples for different disaster types.
+
+[Nick Hess] 10:30:33
+Okay.
+
+[Mohamed Farag] 10:30:41
+Right? If the context length allow that.
+
+[Mohamed Farag] 10:30:46
+But at least two examples two different types.
+
+[Mohamed Farag] 10:30:50
+Do different disaster types.
+
+[Mohamed Farag] 10:30:55
+Okay, to answer your question, Nick. If in the template generation now that's the all of these will be in the prompt, right?
+
+[Mohamed Farag] 10:31:04
+This is the context to use in the prompt. Beside the instructions and everything else If I give… In the admin interface, if they give the LLM For example, floods.
+
+[Mohamed Farag] 10:31:25
+Will it be able to generate a template from the floods given the obstacles and the disaster type floods?
+
+[Mohamed Farag] 10:31:31
+That's why… what we are going to to check the limb, can it generalize enough if i give it a new disaster type that was not in the Examples.
+
+[Mohamed Farag] 10:31:44
+Will it able to understand and generalize and do the task or not for any disaster type that was not in the prompt?
+
+[Mohamed Farag] 10:31:56
+Going back to your question, the template here is general it doesn't depend on these articles But the one thing that you make sure is all the information between brackets here that you require to be in the template should be inside these articles.
+
+[Mohamed Farag] 10:32:13
+Somehow. But I cannot constrain that all these articles should follow the same format as a template.
+
+[Mohamed Farag] 10:32:20
+It doesn't work in real life, right?
+
+[Mohamed Farag] 10:32:25
+When you give examples, you will get examples for New York Times, Huffing Post, Washington Post, ABC, whatever.
+
+[Mohamed Farag] 10:32:32
+All of them will write in a certain format But at least the minimum information for the disaster type should be in there.
+
+[Nick Hess] 10:32:43
+Okay. So yeah, that was one of my questions because earlier you said to have the articles that you upload the summaries follow a template But that was an issue i was seeing was that it's not that's asking the admin a lot
+
+[Nick Hess] 10:32:58
+It's going to ask them to go through and format all of their summaries into a template and then submit it to create a template.
+
+[Nick Hess] 10:33:07
+But…
+
+[Mohamed Farag] 10:33:07
+I didn't mean to format as a template, but following a template means if i because who is providing the template is the admin also right it's not you. The admin, when he uploads the articles he will upload the template.
+
+[Nick Hess] 10:33:18
+Yes.
+
+[Mohamed Farag] 10:33:22
+And you will use that in the prompt. It's not you uploading the template.
+
+[Mohamed Farag] 10:33:29
+The admin will be uploading the template all of these examples
+
+[Mohamed Farag] 10:33:36
+Oh, so in the admin interface you has manual and automated So in the automated web do you get this information from
+
+[Nick Hess] 10:33:40
+Yes. Currently, we just have them providing the type and context and then we give it to the prompt and have it generate a template.
+
+[Mohamed Farag] 10:33:53
+So you don't take the template from the user and the automated
+
+[Nick Hess] 10:33:57
+I thought the whole point was for us to generalize from summaries a template and then provide a template to the user.
+
+[Nick Hess] 10:34:05
+To use for the summaries.
+
+[Mohamed Farag] 10:34:05
+Oh, that's why. Okay, I see now. That's a little bit… Yeah, what I meant by template generation is to give example templates across different types so it will learn to generalize And then it can do that for other different types.
+
+[Mohamed Farag] 10:34:24
+Because you are testing now, for example, for wildfire if you give it and articles about e3 that was not in the template i was in the prompt will it be able to fill in that template?
+
+[Nick Hess] 10:34:25
+Right.
+
+[Mohamed Farag] 10:34:35
+It should be now it's information extraction right now you see how you are testing the llm So you are testing two things. If I give it a disaster type that was not in the prompt.
+
+[Nick Hess] 10:34:46
+Yes.
+
+[Mohamed Farag] 10:34:52
+Will it be able to come up with its template? That's similar to that task.
+
+[Mohamed Farag] 10:35:00
+And the other thing is if I give it an event that's not in the sample events that was given in the prompt will it be able to extract the information and fill the template or not?
+
+[Nick Hess] 10:35:14
+Right. I think that we're on the same page there. I think the only thing we're missing is I'm still confused on the user providing a template that doesn't It's not making sense to me, I guess.
+
+[Mohamed Farag] 10:35:24
+Because it's not the normal user it's the admin So you still don't understand why the admin should provide the template.
+
+[Nick Hess] 10:35:27
+Right. The admin, sorry.
+
+[Nick Hess] 10:35:32
+Not if we're trying to generate a template. Why would the admin provide a template if their whole goal is to get a template out of this. If they already have a template, then what's the point, I guess is what I'm asking.
+
+[Mohamed Farag] 10:35:42
+As an example. Because you are providing output format for matt one of the examples right and the input you're providing a sample output format because you are teaching the LLM how to generate the template here is a sample output format.
+
+[Mohamed Farag] 10:35:58
+You already did that.
+
+[Nick Hess] 10:35:58
+So you're just saying for the prompt, we need to provide examples. When an admin goes to create E3, for example, in wildfires, which is not in the prompt.
+
+[Nick Hess] 10:36:06
+They don't need to provide a template. They just need to provide the articles and the disaster type and it should generate a new template.
+
+[Mohamed Farag] 10:36:14
+Sorry, no, no, that will be in filling in the template. That's my
+
+[Mohamed Farag] 10:36:22
+So not in the template generation yeah Yeah, yeah, yeah.
+
+[Nick Hess] 10:36:22
+Right. Yeah. Cause they wouldn't they wouldn't make another wildfire.
+
+[Mohamed Farag] 10:36:27
+But so the issue is, so forget about this one the issue is, is if the user provide of the admin ask it for a different disaster type that was not in the pompet Delam should understand how to get the template from here.
+
+[Nick Hess] 10:36:28
+Okay.
+
+[Mohamed Farag] 10:36:43
+Based on these two examples. So actually, in a sense, Nick, you are just adding another template. You're already providing sample one, right?
+
+[Nick Hess] 10:36:44
+Right.
+
+[Nick Hess] 10:36:53
+Yeah, we already have the hurricane one.
+
+[Mohamed Farag] 10:36:55
+We said… Yeah, so you're just adding another one and we said at least two in order for the LM to generalize. So we're just adding one more template.
+
+[Nick Hess] 10:37:04
+Okay. So this is just all for the prompt. We have the correct admin input.
+
+[Nick Hess] 10:37:08
+Like the data flow is right, like the type and the the summaries. When the admin goes to create example like for floods They don't need to provide a template for floods.
+
+[Nick Hess] 10:37:18
+We just rely on the fact that we have context from articles of wildfires okay
+
+[Mohamed Farag] 10:37:22
+In the prompt, yes, yes, yeah. Actually, this will be in the manual part, not the automated part.
+
+[Mohamed Farag] 10:37:28
+Because the manual the user the admin will create the prompt or what's different from the manual on the other than the automated
+
+[Nick Hess] 10:37:37
+Our idea behind automated using AI in the manual was say an admin already had a template that they generated at some point and using something else and they just wanted to manually upload it directly to the templates for people to use.
+
+[Nick Hess] 10:37:50
+It just skips all past all the AI stuff.
+
+[Mohamed Farag] 10:37:51
+Oh, okay. Okay. Yeah. Yeah.
+
+[Nick Hess] 10:37:56
+Whereas the AI stuff is all the llm part that we've been working on.
+
+[Mohamed Farag] 10:38:00
+Okay, I see now. In the pump, you add another template And hopefully the LLM will… pick it up and understand that it needs to work it from there for to generalize.
+
+[Nick Hess] 10:38:04
+Okay. So yeah, we just…
+
+[Nick Hess] 10:38:18
+Okay.
+
+[Mohamed Farag] 10:38:19
+Okay, should I close my screen or you need to take a screenshot?
+
+[Nick Hess] 10:38:24
+Jackson, did you take a screenshot? Okay. Yeah.
+
+[Jackson Small] 10:38:25
+Yeah, I took a screenshot.
+
+[Mohamed Farag] 10:38:27
+Okay, thank you. Lead to another meeting, so I have to leave now.
+
+[Nick Hess] 10:38:31
+Okay. All right. Thank you. Bullshit.
+
+[] 10:38:33
+Thank you.
+
+[Alex Ryu] 10:38:34
+Thank you.
+
+[Nick Hess] 10:38:38
+My God. We just went in circles for like 15 minutes just for him to tell us, oh, you just need to add another example in the template.
+
+[Jackson Small] 10:38:39
+This is, wow.
+
+[Aneesh] 10:38:45
+Wait, okay. I… Hello.
+
+[Jackson Small] 10:38:45
+I was like very convoluted.
+
+[Alex Ryu] 10:38:47
+His wording is kind of hard to understand
+
+[Nick Hess] 10:38:50
+Yeah, we can hear you, Anish.
+
+[Aneesh] 10:38:52
+Okay. Yeah, I did get it to work with earthquakes and it made like a pretty decent template here. I'll just send it.
+
+[Aneesh] 10:39:04
+I mean, it's like kind of similar to the hurricane one, I guess, in terms of wording but Oh.
+
+[Nick Hess] 10:39:05
+I.
+
+[Nick Hess] 10:39:18
+Yeah, yeah, that's what be like a very good… example template, I guess.
+
+[Nick Hess] 10:39:26
+I just cannot believe how… I mean, we were 10 minutes late past that meeting because we were just going in circles. It's so hard to understand him sometimes.
+
+[Nick Hess] 10:39:34
+It just doesn't make sense.
+
+[Aneesh] 10:39:38
+Was he basically just saying make the… like the
+

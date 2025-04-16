@@ -1,0 +1,35 @@
+Aneesh and Alex demonstrated the docker image running on their computers.
+
+Client asked why it is so large being 19gbs. Wondering if we could use a smaller model, even though we are using the demonstrated model.
+
+The root folder in the linux server has 20 gigs of storage. Client is trying to figure this out.
+
+When demoing we domonstrated the admin role and conversation went to normal user sign up.
+We changed Alex's account to show what the app looks like for a normal user. 
+The client wanted to see everything running together. 
+
+The client wants quantified results to gauge how well the AI has generated a template or a summary. 
+
+
+The prompt needs to be updated to not focus on hurricanes and to general and apply to all crisis.
+
+In template generation the most important part is to help the llm generate the template.
+
+In order to do this we need to give the LLM a template when generating a template to help it understand what its doing.
+
+Give it context for multiple locations of the disaster type so that it can create a generalized template. 
+
+The admin should give context in template form as we are prompting and teaching the llm to generalize the template for any version of this disaster
+
+Each crisis event will have multiple events, each event will have multiple articles to five information. The admin will provide all of these articles and template.
+The llm will then map all of this information to make a GENERAL template for the crisis. (see template_information.png)
+
+"what I meant by template generation is to give example templates across different types so it will learn to generalize And then it can do that for other different types."
+^^ this is a major point of contention
+We didn't understand why the admin is providing a template if we are generating one.
+
+This information needs to go into the prompt.
+
+If this is too much information to give to the llm provide article summaries rather than the full article. We will limit character count on frontend.
+
+The articles will not follow the template format, but we need to include the basic information needed for the template.
