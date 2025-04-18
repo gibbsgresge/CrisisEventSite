@@ -274,23 +274,35 @@ def background_generate_from_urls_and_notify(user, category, template_id, urls):
 
 
 def generate_template(disaster_type: str, disaster_context: str) -> str:
-    template = """You are a professional news reporter. Your task is to generate a **generalized summary template** for {disaster_type}, ensuring that it applies to any event of this type.
+    template = """You are a professional news reporter. Your task is to generate a generalized summary template for {disaster_type}, ensuring that it applies to any event of this type.
 
-Each input paragraph describes a past {disaster_type} event. Identify **common key attributes** across all examples and structure them into a **standardized template**.
+Each input paragraph describes a past {disaster_type} event. Identify common key attributes across all examples and structure them into a standardized template.
 
-### **Instructions:**
-The template **must be fully generalized**—DO NOT insert specific details.  
-Use **descriptive placeholder tags** in this format: <attribute-name>.  
-**DO NOT** add extra commentary or change the output structure.  
-The template **must** remain neutral and applicable to all {disaster_type} events.
+Instructions:
+The template must be fully generalized for {disaster_type}s—DO NOT insert specific details from the given context.  
+Use descriptive placeholder tags in this format: <attribute-name>.  
+DO NOT add extra commentary or change the output structure.  
+The template must remain neutral and applicable to all {disaster_type} events.
 The template must end with a <unique-extra-info> tag for unique info about a specific {disaster_type}.
 
-### **Output Format:**
+Here are some examples of summaries that were used to create a template for a Hurricane disaster.
+Context of Hurricanes:
+Hurricane Katrina made landfall on August 29, 2005, as a Category 3 hurricane along the Gulf Coast, primarily affecting Louisiana and Mississippi. It caused catastrophic flooding in New Orleans due to levee failures and had maximum sustained winds of 175 mph. Coastal areas experienced significant storm surge. The aftermath involved widespread displacement and long-term recovery efforts.
+Hurricane Maria struck Puerto Rico on September 20, 2017, as a Category 4 hurricane with winds reaching 155 mph. It caused widespread devastation to infrastructure, including power grids and communication systems. The entire island experienced significant damage, and recovery took years. Heavy rainfall led to severe flooding and landslides.
+Generated Template:
 Hurricane <hurricane-name> was a Category <category> hurricane that affected <primary-affected-location> and caused <primary-effect> on <hurricane-date>. The hurricane had winds up to <max-wind-speed>. Hurricane <hurricane-name> also affected <secondary-affected-area>. <unique-extra-info>.
 
-Examples of {disaster_type}s: {disaster_context}
+Here are some examples of summaries that were used to create a template for a Wildfire disaster.
+Context of Wildfires:
+The Camp Fire in November 2018 in Northern California rapidly spread through dry vegetation, destroying the town of Paradise and causing significant loss of life. High winds and dry conditions fueled the fire, which burned over 153,000 acres and destroyed thousands of structures. The investigation pointed to a power line as the ignition source.
+The Australian bushfires of 2019-2020 were unprecedented in scale, burning millions of hectares across multiple states. Prolonged drought and extreme heat created highly flammable conditions. The fires resulted in significant ecological damage, loss of wildlife, and widespread smoke pollution affecting major cities. Multiple ignition sources, including lightning and human activity, were identified.
+Generated Template:
+Wildfire <wildfire-name> began on <start-date> and burned approximately <acres-burned> acres in <primary-affected-region>, impacting <number-of-structures> structures. The cause of the wildfire is currently <cause-of-fire>. Evacuation orders were issued for <evacuated-areas>. <unique-extra-info>.
 
-**Return ONLY the structured template above without explanations or additional text.**
+Now given the follow context, create a template for {disaster_type}s like the examples above:
+{disaster_context}
+
+Return ONLY the structured template above without explanations or additional text.
 """
 
     prompt = PromptTemplate(input_variables=["disaster_type", "disaster_context"], template=template)
