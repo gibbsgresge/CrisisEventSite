@@ -6,6 +6,7 @@ import { Input } from "./input";
 import { Button } from "./button";
 import { Separator } from "./separator";
 import { Settings } from "lucide-react";
+import Toggle from "./toggle-slider";
 
 export default function AccountInfo() {
   const { data: session } = useSession();
@@ -47,19 +48,22 @@ export default function AccountInfo() {
                 <span className="truncate text-xs">{session?.user?.email}</span>
               </div>
             </div>
-
             {/* <Separator />
             <div>
               <span>Settings</span>
             </div> */}
             <Separator />
-            <Button
-              variant={"ghost"}
-              className="flex gap-2 items-center justify-start"
-            >
-              <Settings size={20} />
-              <span>Settings</span>
-            </Button>
+            <div className="p-2">
+              <div className="flex justify-between ">
+                Email Notifications
+                <Toggle />
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                You will only receive notifications when summaries or templates
+                are done generating if this setting is on.
+              </p>
+            </div>
+
             <Button
               className="mt-1"
               onClick={() => signOut({ callbackUrl: "/" })}

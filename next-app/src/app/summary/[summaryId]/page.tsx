@@ -1,8 +1,15 @@
 "use client";
-import { getSummaryById } from "@/app/server/queries";
+import { getSummaryById, getUserByEmail } from "@/app/server/queries";
 import { useQuery } from "react-query";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { redirect, useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Copy } from "lucide-react"; // Make sure you have lucide-react installed
+import { useToast } from "@/hooks/use-toast";
+import { User } from "next-auth";
+import { useSession } from "next-auth/react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default function SummaryPage() {
   const params = useParams<{ summaryId: string }>();
@@ -18,6 +25,47 @@ export default function SummaryPage() {
       return summary;
     },
   });
+
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    if (!summary) return;
+    navigator.clipboard.writeText(summary.summary);
+    setCopied(true);
+    toast({
+      title: "Summary Copied to Clipboard",
+      variant: "default",
+    });
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const [user, setUser] = useState<User | null>(null);
+
+  const { toast } = useToast();
+
+  // check if user is signed in
+  const { data: session } = useSession();
+  if (!session || !session.user || !session.user.email) {
+    redirect("/api/auth/signin");
+  }
+
+  // fetch user object to send to backend on POST
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        if (!session || !session.user || !session.user.email) {
+          return;
+        }
+        const userResponse = await getUserByEmail(session.user.email);
+        setUser(userResponse);
+        console.log(userResponse);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+
+    fetchUser();
+  }, [session]);
 
   const scrubTitle = (title: string): string => {
     if (!title) return "";
@@ -35,19 +83,24 @@ export default function SummaryPage() {
   if (!summary) redirect("/");
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto max-w-3xl p-4">
       <h1 className="text-3xl font-bold">{scrubTitle(summary.title)}</h1>
-      <p className="text-sm text-muted-foreground">
-        Category: {summary.category}
-      </p>
-      <div className="mt-4">
-        <h2 className="text-xl">Summary:</h2>
+      <Card className="mt-4 group relative bg-muted p-4 transition">
         <p>{summary.summary}</p>
-      </div>
+        <Button
+          onClick={handleCopy}
+          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+          title={copied ? "Copied!" : "Copy summary"}
+          size={"icon"}
+        >
+          <Copy className="h-4 w-4" />
+        </Button>
+      </Card>
+      <div className=""></div>
       <div className="mt-4">
         <p className="text-sm text-muted-foreground">
           Created at: {new Date(summary.created_at).toLocaleString()} by{" "}
-          {summary.recipient.email}
+          {summary.recipient.email} using {summary.category} Template
         </p>
       </div>
     </div>

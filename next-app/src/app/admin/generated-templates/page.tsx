@@ -14,7 +14,7 @@ import { User } from "next-auth";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Save, Trash } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronUp, Save, Trash } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { toast, useToast } from "@/hooks/use-toast";
@@ -138,7 +138,7 @@ export default function GeneratedTemplates() {
   if (isLoading || queryLoading || !user) return <LoadingSpinner />;
 
   return (
-    <div className="flex flex-col px-4 mb-16 w-full max-w-3xl">
+    <div className="flex flex-col px-4 w-full max-w-3xl">
       <div className="flex items-center gap-2 py-4">
         <Button
           variant={"ghost"}
@@ -183,6 +183,7 @@ function EditableTemplateCard({
 }: EditableTemplateCardProps) {
   const [editableTemplate, setEditableTemplate] = useState<template>(template);
   const [isEditing, setIsEditing] = useState(false);
+  const [attributesExpanded, setAttributesExpanded] = useState(false);
 
   const handleChange = (field: string, value: string | string[]) => {
     setEditableTemplate((prev) => ({ ...prev, [field]: value }));
@@ -195,7 +196,7 @@ function EditableTemplateCard({
   };
 
   return (
-    <Card>
+    <Card className="mb-4">
       <CardHeader>
         <CardTitle>
           <Input
@@ -216,10 +217,26 @@ function EditableTemplateCard({
 
         <Separator className="my-2" />
 
-        <CardTitle className="mt-2">Attributes</CardTitle>
+        <CardTitle className="mt-2 flex items-center justify-between">
+          Attributes
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setAttributesExpanded((prev) => !prev)}
+          >
+            {attributesExpanded ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
+          </Button>
+        </CardTitle>
         {editableTemplate.attributes?.length > 0 && (
           <ul className="flex flex-col gap-2 mt-2 text-xs text-muted-foreground">
-            {editableTemplate.attributes.map((attr, index) => (
+            {(attributesExpanded
+              ? editableTemplate.attributes
+              : [editableTemplate.attributes[0]]
+            ).map((attr, index) => (
               <li key={index} className="flex gap-2">
                 <Input
                   value={attr}
