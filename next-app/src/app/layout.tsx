@@ -47,9 +47,9 @@ export default async function RootLayout({
             <SessionProvider session={session}>
               <SidebarProvider>
                 {session && <AppSidebar />}
-                <div className="flex flex-col w-full h-screen">
+                <div className="flex flex-col w-full h-screen overflow-y-auto">
                   <Header />
-                  <main className="flex flex-1 min-h-screen bg-background justify-center overflow-y-auto">
+                  <main className="flex flex-1 min-h-screen bg-background justify-center">
                     {children}
                   </main>
                   <Toaster />
