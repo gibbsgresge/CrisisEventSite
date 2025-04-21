@@ -8,6 +8,8 @@ import { Copy } from "lucide-react"; // Make sure you have lucide-react installe
 import { useToast } from "@/hooks/use-toast";
 import { User } from "next-auth";
 import { useSession } from "next-auth/react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default function SummaryPage() {
   const params = useParams<{ summaryId: string }>();
@@ -83,16 +85,18 @@ export default function SummaryPage() {
   return (
     <div className="container mx-auto max-w-3xl p-4">
       <h1 className="text-3xl font-bold">{scrubTitle(summary.title)}</h1>
-      <div className="mt-4 relative group bg-muted/40 p-4 rounded-md transition">
+      <Card className="mt-4 group relative bg-muted p-4 transition">
         <p>{summary.summary}</p>
-        <button
+        <Button
           onClick={handleCopy}
-          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-md p-1"
+          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
           title={copied ? "Copied!" : "Copy summary"}
+          size={"icon"}
         >
           <Copy className="h-4 w-4" />
-        </button>
-      </div>
+        </Button>
+      </Card>
+      <div className=""></div>
       <div className="mt-4">
         <p className="text-sm text-muted-foreground">
           Created at: {new Date(summary.created_at).toLocaleString()} by{" "}
