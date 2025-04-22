@@ -2,22 +2,13 @@
 import { useState } from "react";
 
 interface ToggleProps {
+  checked: boolean;
   onChange?: (checked: boolean) => void;
-  defaultChecked?: boolean;
 }
 
-export default function Toggle({
-  onChange,
-  defaultChecked = false,
-}: ToggleProps) {
-  const [checked, setChecked] = useState(defaultChecked);
-
+export default function Toggle({ checked, onChange }: ToggleProps) {
   const toggle = () => {
-    setChecked((prev) => {
-      const newState = !prev;
-      onChange?.(newState);
-      return newState;
-    });
+    onChange?.(!checked);
   };
 
   return (

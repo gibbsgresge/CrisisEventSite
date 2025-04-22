@@ -23,6 +23,7 @@ export const getUserByEmail = async (email: string) => {
     image: user.image || "",
     emailVerified: user.emailVerified || null,
     role: user.role || "user",
+    emailNotifications: user.emailNotifications || null,
   } as User;
 };
 
@@ -44,6 +45,7 @@ export const getAllUsers = async () => {
     email: user.email || "",
     image: user.image || "",
     emailVerified: user.emailVerified || null,
+    emailNotifications: user.emailNotifications || null,
     role: user.role || "user",
   }));
 };
@@ -58,6 +60,36 @@ export const updateUserRole = async (userId: string, newRole: string) => {
 
   const updateDocument = {
     $set: { role: newRole },
+  };
+
+  const result = await usersCollection.updateOne(filter, updateDocument);
+
+  console.log("Filter used:", filter);
+  console.log("Result:", result);
+
+  if (result.matchedCount === 0) {
+    throw new Error(`User with ID ${userId} not found`);
+  }
+  if (result.modifiedCount === 0) {
+    throw new Error("User role update failed (role might be the same)");
+  }
+
+  return { success: true };
+};
+
+export const updateUserEmailNotificationPreference = async (
+  userId: string,
+  newPreference: boolean
+) => {
+  const client = await clientPromise;
+  const db = client.db();
+  const usersCollection = db.collection("users");
+
+  // Convert to ObjectId ONLY if necessary
+  const filter = { _id: new ObjectId(userId) };
+
+  const updateDocument = {
+    $set: { emailNotifications: newPreference },
   };
 
   const result = await usersCollection.updateOne(filter, updateDocument);
