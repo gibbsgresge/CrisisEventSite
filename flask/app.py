@@ -132,8 +132,9 @@ def background_generate_and_notify(user, category, source_text):
             f"Template generation took {end_time - start_time:.2f} seconds\n\n"
             "You can now return to the site to view the summary."
         )
-        send_email(SENDER_EMAIL, SENDER_PASSWORD, user['email'],
-                   f"Your {category} Template is Ready!", body)
+        if (user['emailNotifications'] == True):
+            send_email(SENDER_EMAIL, SENDER_PASSWORD, user['email'],
+                    f"Your {category} Template is Ready!", body)
 
     except Exception as e:
         print(f"Error in background processing: {e}")
@@ -265,8 +266,9 @@ def background_generate_from_urls_and_notify(user, category, template_id, urls):
             f"Summary generation took {end_time - start_time:.2f} seconds\n\n"
             "You can now return to the site to view the summary."
         )
-        send_email(SENDER_EMAIL, SENDER_PASSWORD, user['email'],
-                   f"Your {category} Summary is Ready!", body)
+        if (user['emailNotifications'] == True):
+            send_email(SENDER_EMAIL, SENDER_PASSWORD, user['email'],
+                    f"Your {category} Summary is Ready!", body)
 
     except Exception as e:
         print(f"[ERROR] Background processing failed: {e}")
@@ -404,6 +406,8 @@ def generate_template_endpoint():
     raw_text = data['text']
     category = data['category']
     user = data['user']
+
+    print(user)
 
     if not all(key in user for key in ['name', 'email', 'id', 'role']):
         return jsonify({"error": "User object must contain 'name', 'email', '_id', and 'role'."}), 400
